@@ -38,7 +38,7 @@
       </div>
     {% endif %}
 
-    <div 
+    <product-recommender
       class="product-recommender-section__content" 
       id="product-recommender-{{ section.id }}"
       data-section-id="{{ section.id }}"
@@ -199,7 +199,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </product-recommender>
   </div>
 </div>
 
@@ -369,8 +369,8 @@
   }
 
   .product-recommender__options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
     max-width: 800px;
     margin: 0 auto;
@@ -455,11 +455,14 @@
     border-radius: 16px;
     padding: 32px;
     box-shadow: 0 8px 32px rgba(var(--color-foreground-rgb), 0.1);
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 32px;
     max-width: 900px;
     margin: 0 auto;
+    text-align: center;
+    align-items: center;
+    justify-items: center;
   }
 
   .product-recommender__product-image-wrapper {
@@ -480,6 +483,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    align-items: center;
+    text-align: center;
   }
 
   .product-recommender__product-title {
@@ -509,14 +514,19 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
   }
 
   .product-recommender__product-benefits li {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
     gap: 12px;
     font-size: 0.9375rem;
     line-height: 1.5;
+    text-align: center;
   }
 
   .product-recommender__product-benefits li::before {
@@ -547,11 +557,17 @@
   /* Responsive Design */
   @media screen and (min-width: 750px) {
     .product-recommender__product-card {
-      grid-template-columns: 300px 1fr;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
     }
 
     .product-recommender__options {
-      grid-template-columns: repeat(3, 1fr);
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
   }
 
@@ -561,7 +577,10 @@
     }
 
     .product-recommender__options {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .product-recommender__progress-label {
