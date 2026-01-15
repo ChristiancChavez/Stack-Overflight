@@ -8,11 +8,52 @@ class ProductRecommender extends HTMLElement {
       coverageLevel: null
     };
     this.sectionId = this.id.replace('product-recommender-', '');
+    /** @type {Array<{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}}>} */
+    this.mappings = [];
+    /** @type {Array<{settings?: {benefit_text?: string, icon_type?: string, icon_name?: string, benefit_image?: string}}>} */
+    this.benefits = [];
+    /** @type {any} */
+    this.currentProduct = null;
+    /** @type {any} */
+    this.currentVariant = null;
   }
 
   connectedCallback() {
+    this.loadMappings();
+    this.loadBenefits();
     this.initializeSelectors();
+    this.initializeCTA();
     this.updateProgress();
+  }
+
+  /**
+   * Load product mappings from data attribute
+   */
+  loadMappings() {
+    try {
+      const mappingsData = this.dataset.mappings;
+      if (mappingsData) {
+        this.mappings = JSON.parse(mappingsData);
+      }
+    } catch (e) {
+      console.error('Error parsing mappings:', e);
+      this.mappings = [];
+    }
+  }
+
+  /**
+   * Load benefits from data attribute
+   */
+  loadBenefits() {
+    try {
+      const benefitsData = this.dataset.benefits;
+      if (benefitsData) {
+        this.benefits = JSON.parse(benefitsData);
+      }
+    } catch (e) {
+      console.error('Error parsing benefits:', e);
+      this.benefits = [];
+    }
   }
 
   /**
@@ -22,11 +63,12 @@ class ProductRecommender extends HTMLElement {
     const optionCards = this.querySelectorAll('.product-recommender__option-card');
     
     optionCards.forEach(card => {
-      card.addEventListener('click', (e) => {
-        const step = parseInt(card.dataset.step);
-        const value = card.dataset.value;
+      const htmlCard = /** @type {HTMLElement} */ (card);
+      htmlCard.addEventListener('click', (e) => {
+        const step = parseInt(htmlCard.dataset.step || '0');
+        const value = htmlCard.dataset.value || '';
         
-        this.handleSelection(step, value, card);
+        this.handleSelection(step, value, htmlCard);
       });
     });
   }
@@ -41,13 +83,13 @@ class ProductRecommender extends HTMLElement {
     // Update selection state
     switch(step) {
       case 1:
-        this.selections.tripType = value;
+        /** @type {string | null} */ (this.selections.tripType) = value;
         break;
       case 2:
-        this.selections.costRange = value;
+        /** @type {string | null} */ (this.selections.costRange) = value;
         break;
       case 3:
-        this.selections.coverageLevel = value;
+        /** @type {string | null} */ (this.selections.coverageLevel) = value;
         break;
     }
 
@@ -105,14 +147,14 @@ class ProductRecommender extends HTMLElement {
    */
   updateProgress() {
     const progressSteps = this.querySelectorAll('.product-recommender__progress-step');
-    const progressFill = this.querySelector('.product-recommender__progress-fill');
+    const progressFill = /** @type {HTMLElement | null} */ (this.querySelector('.product-recommender__progress-fill'));
     
     if (!progressSteps.length || !progressFill) return;
 
     // Update step states
     progressSteps.forEach((step, index) => {
       const stepNumber = index + 1;
-      const stepElement = step;
+      const stepElement = /** @type {HTMLElement} */ (step);
       
       if (stepNumber < this.currentStep) {
         stepElement.setAttribute('data-completed', 'true');
@@ -134,9 +176,203 @@ class ProductRecommender extends HTMLElement {
   /**
    * Called when all steps are completed
    */
-  onAllStepsComplete() {
-    // This will be implemented in the next feature (mapping)
-    console.log('All steps completed:', this.selections);
+  async onAllStepsComplete() {
+    const matchingMapping = this.findMatchingProduct();
+    
+    if (matchingMapping && matchingMapping.settings && matchingMapping.settings.product) {
+      await this.loadProductData(matchingMapping);
+      this.displayProduct(matchingMapping);
+    } else {
+      console.warn('No matching product found for selections:', this.selections);
+    }
+  }
+
+  /**
+   * Find matching product based on selections
+   * @returns {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}} | null} Matching product mapping or null
+   */
+  findMatchingProduct() {
+    // Try exact match first
+    for (const mapping of this.mappings) {
+      if (!mapping || !mapping.settings) continue;
+      
+      const matchesTripType = mapping.settings.trip_type === this.selections.tripType;
+      const matchesCostRange = mapping.settings.cost_range === this.selections.costRange;
+      const matchesCoverage = mapping.settings.coverage_level === this.selections.coverageLevel;
+      
+      if (matchesTripType && matchesCostRange && matchesCoverage) {
+        return mapping;
+      }
+    }
+
+    // Try partial matches (priority: coverage > trip type > cost range)
+    for (const mapping of this.mappings) {
+      if (!mapping || !mapping.settings) continue;
+      
+      const matchesCoverage = mapping.settings.coverage_level === this.selections.coverageLevel;
+      const matchesTripType = mapping.settings.trip_type === this.selections.tripType;
+      
+      if (matchesCoverage && matchesTripType) {
+        return mapping;
+      }
+    }
+
+    for (const mapping of this.mappings) {
+      if (!mapping || !mapping.settings) continue;
+      
+      if (mapping.settings.coverage_level === this.selections.coverageLevel) {
+        return mapping;
+      }
+    }
+
+    // Return first mapping as fallback
+    return this.mappings.length > 0 ? (this.mappings[0] || null) : null;
+  }
+
+  /**
+   * Load product data from Shopify
+   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
+   */
+  async loadProductData(mapping) {
+    if (!mapping || !mapping.settings || !mapping.settings.product) return;
+
+    try {
+      const productHandle = mapping.settings.product.split('/').pop();
+      const response = await fetch(`/products/${productHandle}.js`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load product: ${response.status}`);
+      }
+
+      this.currentProduct = await response.json();
+      
+      // Find variant if specified
+      if (mapping.settings.variant_id) {
+        const variantId = parseInt(mapping.settings.variant_id);
+        this.currentVariant = this.currentProduct.variants.find(/** @param {any} v */ (v) => v.id === variantId);
+      }
+      
+      // Use first available variant if no variant specified
+      if (!this.currentVariant) {
+        this.currentVariant = this.currentProduct.variants.find(/** @param {any} v */ (v) => v.available) || this.currentProduct.variants[0];
+      }
+    } catch (error) {
+      console.error('Error loading product data:', error);
+      this.currentProduct = null;
+      this.currentVariant = null;
+    }
+  }
+
+  /**
+   * Display the recommended product
+   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
+   */
+  displayProduct(mapping) {
+    if (!this.currentProduct || !this.currentVariant || !mapping || !mapping.settings) {
+      console.error('Product data not loaded');
+      return;
+    }
+
+    const resultContainer = this.querySelector('.product-recommender__result');
+    if (!resultContainer) return;
+
+    // Hide selector, show result
+    const selector = this.querySelector('.product-recommender__selector');
+    if (selector) {
+      selector.classList.add('product-recommender__step--hidden');
+    }
+    resultContainer.classList.remove('product-recommender__result--hidden');
+
+    // Update product image
+    const imageElement = /** @type {HTMLImageElement | null} */ (resultContainer.querySelector('.product-recommender__product-image'));
+    if (imageElement) {
+      const imageUrl = this.currentVariant.featured_image || this.currentProduct.featured_image;
+      if (imageUrl) {
+        imageElement.src = imageUrl;
+        imageElement.alt = this.currentProduct.title;
+      }
+    }
+
+    // Update product title
+    const titleElement = resultContainer.querySelector('.product-recommender__product-title');
+    if (titleElement) {
+      titleElement.textContent = mapping.settings.override_title || this.currentProduct.title;
+    }
+
+    // Update product copy
+    const copyElement = resultContainer.querySelector('.product-recommender__product-copy');
+    if (copyElement) {
+      copyElement.textContent = mapping.settings.override_copy || this.currentProduct.description || '';
+    }
+
+    // Update product price
+    const priceElement = resultContainer.querySelector('.product-recommender__product-price');
+    if (priceElement) {
+      if (mapping.settings.override_price) {
+        priceElement.textContent = mapping.settings.override_price;
+      } else {
+        const price = (this.currentVariant.price / 100).toFixed(2);
+        priceElement.textContent = `€${price}`;
+      }
+    }
+
+    // Update benefits
+    const benefitsList = resultContainer.querySelector('.product-recommender__product-benefits');
+    if (benefitsList) {
+      benefitsList.innerHTML = '';
+      this.benefits.forEach(benefit => {
+        if (benefit && benefit.settings && benefit.settings.benefit_text) {
+          const li = document.createElement('li');
+          li.textContent = benefit.settings.benefit_text;
+          benefitsList.appendChild(li);
+        }
+      });
+    }
+
+    // Store product data for CTA
+    const ctaButton = /** @type {HTMLElement | null} */ (resultContainer.querySelector('.product-recommender__cta-button'));
+    if (ctaButton) {
+      ctaButton.dataset.productId = String(this.currentProduct.id);
+      ctaButton.dataset.variantId = String(this.currentVariant.id);
+      ctaButton.dataset.productHandle = this.currentProduct.handle;
+    }
+
+    // Scroll to result
+    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /**
+   * Initialize CTA button
+   */
+  initializeCTA() {
+    const ctaButton = /** @type {HTMLElement | null} */ (this.querySelector('.product-recommender__cta-button'));
+    if (ctaButton) {
+      ctaButton.addEventListener('click', () => {
+        this.handleCTAClick(ctaButton);
+      });
+    }
+  }
+
+  /**
+   * Handle CTA button click
+   * @param {HTMLElement} button - The CTA button element
+   */
+  handleCTAClick(button) {
+    const ctaType = button.dataset.ctaType || 'add_to_cart';
+    
+    if (ctaType === 'add_to_cart') {
+      // Will be implemented in next feature
+      console.log('Add to cart:', {
+        productId: button.dataset.productId,
+        variantId: button.dataset.variantId
+      });
+    } else {
+      // Navigate to product page
+      const productHandle = button.dataset.productHandle;
+      if (productHandle) {
+        window.location.href = `/products/${productHandle}`;
+      }
+    }
   }
 
   /**
