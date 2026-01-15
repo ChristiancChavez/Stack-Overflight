@@ -281,10 +281,28 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "product_recommender_homepage": {
+      "type": "product-recommender",
+      "name": "Product Recommender",
+      "settings": {
+        "title": "Find Your Perfect Travel Insurance",
+        "subtitle": "Answer a few questions to get personalized recommendations",
+        "color_scheme": "scheme-1",
+        "background_style": "solid",
+        "cta_type": "add_to_cart",
+        "cta_text": "Add to Cart",
+        "section_width": "page-width",
+        "gap": 24,
+        "padding-block-start": 64,
+        "padding-block-end": 64
+      },
+      "blocks": {}
     }
   },
   "order": [
     "hero_jVaWmY",
+    "product_recommender_homepage",
     "product_list_fa6P9H"
   ]
 }
