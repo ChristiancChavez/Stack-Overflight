@@ -357,15 +357,11 @@ class ProductRecommender extends HTMLElement {
    * Handle CTA button click
    * @param {HTMLElement} button - The CTA button element
    */
-  handleCTAClick(button) {
+  async handleCTAClick(button) {
     const ctaType = button.dataset.ctaType || 'add_to_cart';
     
     if (ctaType === 'add_to_cart') {
-      // Will be implemented in next feature
-      console.log('Add to cart:', {
-        productId: button.dataset.productId,
-        variantId: button.dataset.variantId
-      });
+      await this.addToCart(button);
     } else {
       // Navigate to product page
       const productHandle = button.dataset.productHandle;
@@ -373,6 +369,112 @@ class ProductRecommender extends HTMLElement {
         window.location.href = `/products/${productHandle}`;
       }
     }
+  }
+
+  /**
+   * Add product to cart
+   * @param {HTMLElement} button - The CTA button element
+   */
+  async addToCart(button) {
+    const variantId = button.dataset.variantId;
+    if (!variantId) {
+      console.error('Variant ID not found');
+      return;
+    }
+
+    // Disable button and show loading state
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Adding...';
+
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('id', variantId);
+      formData.append('quantity', '1');
+      formData.append('sections', this.sectionId);
+
+      // Use fetchConfig from utilities if available, otherwise use basic config
+      let fetchCfg;
+      if (typeof window.fetchConfig === 'function') {
+        fetchCfg = window.fetchConfig('javascript', { body: formData });
+      } else {
+        fetchCfg = {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        };
+      }
+
+      const response = await fetch(Theme.routes.cart_add_url, {
+        ...fetchCfg,
+        headers: {
+          ...fetchCfg.headers,
+          Accept: 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.status) {
+        // Error occurred
+        console.error('Add to cart error:', data.message);
+        this.showErrorMessage(button, data.message || 'Failed to add product to cart');
+        button.disabled = false;
+        button.textContent = originalText;
+      } else {
+        // Success
+        button.textContent = 'Added to Cart!';
+        
+        // Dispatch cart add event for other components
+        document.dispatchEvent(
+          new CustomEvent('cart:add', {
+            detail: {
+              items: data.items || [],
+              sections: data.sections || {}
+            },
+            bubbles: true
+          })
+        );
+
+        // Reset button after delay
+        setTimeout(() => {
+          button.disabled = false;
+          button.textContent = originalText;
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      this.showErrorMessage(button, 'An error occurred. Please try again.');
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+
+  /**
+   * Show error message
+   * @param {HTMLElement} button - The button element
+   * @param {string} message - Error message
+   */
+  showErrorMessage(button, message) {
+    // Create or get error message element
+    let errorElement = this.querySelector('.product-recommender__error-message');
+    if (!errorElement) {
+      errorElement = document.createElement('div');
+      errorElement.className = 'product-recommender__error-message';
+      errorElement.setAttribute('role', 'alert');
+      button.parentElement?.insertBefore(errorElement, button);
+    }
+    
+    errorElement.textContent = message;
+    errorElement.classList.remove('product-recommender__error-message--hidden');
+
+    // Hide error after delay
+    setTimeout(() => {
+      errorElement?.classList.add('product-recommender__error-message--hidden');
+    }, 5000);
   }
 
   /**

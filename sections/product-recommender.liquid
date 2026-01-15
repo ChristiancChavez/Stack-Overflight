@@ -571,6 +571,27 @@
       padding: 24px;
     }
   }
+
+  /* Error Message */
+  .product-recommender__error-message {
+    padding: 12px 16px;
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 8px;
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .product-recommender__error-message--hidden {
+    display: none;
+  }
+
+  .product-recommender__cta-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 {% endstylesheet %}
 
 {% schema %}
