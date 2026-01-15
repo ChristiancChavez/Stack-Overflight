@@ -19,12 +19,15 @@ class ProductRecommender extends HTMLElement {
   }
 
   connectedCallback() {
-    this.loadMappings();
-    this.loadBenefits();
-    this.initializeSelectors();
-    this.initializeCTA();
-    this.updateProgress();
-    this.optimizeForHomepage();
+    // Use requestAnimationFrame to ensure DOM is fully ready
+    requestAnimationFrame(() => {
+      this.loadMappings();
+      this.loadBenefits();
+      this.initializeSelectors();
+      this.initializeCTA();
+      this.updateProgress();
+      this.optimizeForHomepage();
+    });
   }
 
   /**
@@ -126,11 +129,24 @@ class ProductRecommender extends HTMLElement {
   initializeSelectors() {
     const optionCards = this.querySelectorAll('.product-recommender__option-card');
     
+    if (optionCards.length === 0) {
+      console.warn('No option cards found in product recommender');
+      return;
+    }
+    
     optionCards.forEach(card => {
       const htmlCard = /** @type {HTMLElement} */ (card);
       htmlCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const step = parseInt(htmlCard.dataset.step || '0');
         const value = htmlCard.dataset.value || '';
+        
+        if (!step || !value) {
+          console.warn('Missing step or value:', { step, value, dataset: htmlCard.dataset });
+          return;
+        }
         
         this.handleSelection(step, value, htmlCard);
       });
