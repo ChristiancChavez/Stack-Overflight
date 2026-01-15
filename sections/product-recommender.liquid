@@ -1,0 +1,334 @@
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    product-recommender-section
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    spacing-style
+  "
+  style="{% render 'spacing-style', settings: section.settings %}"
+  {{ section.shopify_attributes }}
+>
+  <div class="product-recommender-section__container">
+    <!-- Content will be added in subsequent features -->
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Recommender",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Benefit Content"
+        },
+        {
+          "type": "text",
+          "id": "benefit_text",
+          "label": "Benefit Text",
+          "default": "Benefit description"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon Type",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "icon",
+              "label": "Icon"
+            },
+            {
+              "value": "image",
+              "label": "Image"
+            }
+          ],
+          "default": "icon"
+        },
+        {
+          "type": "text",
+          "id": "icon_name",
+          "label": "Icon Name",
+          "info": "Enter icon name from theme icon set",
+          "visible_if": "{{ block.settings.icon_type == 'icon' }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "benefit_image",
+          "label": "Benefit Image",
+          "visible_if": "{{ block.settings.icon_type == 'image' }}"
+        }
+      ]
+    },
+    {
+      "type": "product_mapping",
+      "name": "Product Mapping",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Selection Criteria"
+        },
+        {
+          "type": "select",
+          "id": "trip_type",
+          "label": "Trip Type",
+          "options": [
+            {
+              "value": "single",
+              "label": "Single trip"
+            },
+            {
+              "value": "multi",
+              "label": "Multi-trip"
+            }
+          ],
+          "default": "single"
+        },
+        {
+          "type": "select",
+          "id": "cost_range",
+          "label": "Trip Cost Range",
+          "options": [
+            {
+              "value": "under_500",
+              "label": "<€500"
+            },
+            {
+              "value": "500_1500",
+              "label": "€500–€1500"
+            },
+            {
+              "value": "over_1500",
+              "label": ">€1500"
+            }
+          ],
+          "default": "under_500"
+        },
+        {
+          "type": "select",
+          "id": "coverage_level",
+          "label": "Coverage Level",
+          "options": [
+            {
+              "value": "standard",
+              "label": "Standard"
+            },
+            {
+              "value": "premium",
+              "label": "Premium"
+            },
+            {
+              "value": "max",
+              "label": "Max"
+            }
+          ],
+          "default": "standard"
+        },
+        {
+          "type": "header",
+          "content": "Product Configuration"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (Optional)",
+          "info": "Enter variant ID to use specific variant. Leave blank to use product's default variant. Variant ID can be found in product admin."
+        },
+        {
+          "type": "header",
+          "content": "Override Fields (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "override_title",
+          "label": "Product Title Override",
+          "info": "Leave blank to use product title"
+        },
+        {
+          "type": "textarea",
+          "id": "override_copy",
+          "label": "Short Copy Override",
+          "info": "Leave blank to use product description"
+        },
+        {
+          "type": "text",
+          "id": "override_price",
+          "label": "Price Override",
+          "info": "Leave blank to use product price. Format: €XX.XX"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Find Your Perfect Travel Insurance"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Answer a few questions to get personalized recommendations"
+    },
+    {
+      "type": "header",
+      "content": "Background Style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background Style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid Color"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "visible_if": "{{ section.settings.background_style == 'image' }}"
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Gradient Start Color",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Gradient End Color",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "select",
+      "id": "cta_type",
+      "label": "CTA Button Type",
+      "options": [
+        {
+          "value": "add_to_cart",
+          "label": "Add to Cart"
+        },
+        {
+          "value": "go_to_product",
+          "label": "Go to Product"
+        }
+      ],
+      "default": "add_to_cart"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Recommender",
+      "category": "t:categories.products"
+    }
+  ]
+}
+{% endschema %}
+
