@@ -80,16 +80,14 @@ class ProductRecommender extends HTMLElement {
    * Defer non-critical animations for better performance
    */
   deferAnimations() {
-    // Use requestIdleCallback if available
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        this.classList.add('product-recommender--animations-ready');
-      });
-    } else {
-      setTimeout(() => {
-        this.classList.add('product-recommender--animations-ready');
-      }, 100);
-    }
+    // Use requestIdleCallback if available, otherwise use setTimeout
+    const idleCallback = typeof window.requestIdleCallback === 'function' 
+      ? window.requestIdleCallback 
+      : setTimeout;
+    
+    idleCallback(() => {
+      this.classList.add('product-recommender--animations-ready');
+    }, 100);
   }
 
   /**
