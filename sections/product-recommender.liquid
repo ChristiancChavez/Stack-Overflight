@@ -38,7 +38,13 @@
       </div>
     {% endif %}
 
-    <div class="product-recommender-section__content" id="product-recommender-{{ section.id }}">
+    <div 
+      class="product-recommender-section__content" 
+      id="product-recommender-{{ section.id }}"
+      data-section-id="{{ section.id }}"
+      data-mappings="{{ section.blocks | where: 'type', 'product_mapping' | json | escape }}"
+      data-benefits="{{ section.blocks | where: 'type', 'benefit' | json | escape }}"
+    >
       <!-- Progress Indicator -->
       <div class="product-recommender__progress" aria-hidden="true">
         <div class="product-recommender__progress-steps">
