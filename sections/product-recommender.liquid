@@ -1,0 +1,82 @@
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    product-recommender-section
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    spacing-style
+  "
+  style="{% render 'spacing-style', settings: section.settings %}"
+  {{ section.shopify_attributes }}
+>
+  <div class="product-recommender-section__container">
+    <!-- Content will be added in subsequent features -->
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Recommender",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Recommender",
+      "category": "t:categories.products"
+    }
+  ]
+}
+{% endschema %}
+
