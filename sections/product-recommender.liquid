@@ -1,0 +1,879 @@
+
+{% liquid
+  assign background_style_class = 'product-recommender-section--background-' | append: section.settings.background_style
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    product-recommender-section
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    spacing-style
+    {{ background_style_class }}
+  "
+  style="
+    {% render 'spacing-style', settings: section.settings %}
+    {% if section.settings.background_style == 'image' and section.settings.background_image != blank %}
+      --background-image: url('{{ section.settings.background_image | image_url: width: 2000 }}');
+    {% endif %}
+    {% if section.settings.background_style == 'gradient' %}
+      --gradient-start: {{ section.settings.gradient_start }};
+      --gradient-end: {{ section.settings.gradient_end }};
+    {% endif %}
+    --section-gap: {{ section.settings.gap }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="product-recommender-section__container">
+    {% if section.settings.title != blank or section.settings.subtitle != blank %}
+      <div class="product-recommender-section__header">
+        {% if section.settings.title != blank %}
+          <h2 class="product-recommender-section__title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="product-recommender-section__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="product-recommender-section__content" id="product-recommender-{{ section.id }}">
+      <!-- Progress Indicator -->
+      <div class="product-recommender__progress" aria-hidden="true">
+        <div class="product-recommender__progress-steps">
+          <div class="product-recommender__progress-step" data-step="1">
+            <span class="product-recommender__progress-number">1</span>
+            <span class="product-recommender__progress-label">Trip Type</span>
+          </div>
+          <div class="product-recommender__progress-step" data-step="2">
+            <span class="product-recommender__progress-number">2</span>
+            <span class="product-recommender__progress-label">Cost Range</span>
+          </div>
+          <div class="product-recommender__progress-step" data-step="3">
+            <span class="product-recommender__progress-number">3</span>
+            <span class="product-recommender__progress-label">Coverage</span>
+          </div>
+        </div>
+        <div class="product-recommender__progress-bar">
+          <div class="product-recommender__progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Selector Steps -->
+      <div class="product-recommender__selector">
+        <!-- Step 1: Trip Type -->
+        <div class="product-recommender__step" data-step="1">
+          <h3 class="product-recommender__step-title">What type of trip are you planning?</h3>
+          <div class="product-recommender__options">
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="single"
+              data-step="1"
+              aria-label="Select Single trip"
+            >
+              <span class="product-recommender__option-label">Single trip</span>
+              <span class="product-recommender__option-description">One-time travel coverage</span>
+            </button>
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="multi"
+              data-step="1"
+              aria-label="Select Multi-trip"
+            >
+              <span class="product-recommender__option-label">Multi-trip</span>
+              <span class="product-recommender__option-description">Multiple trips coverage</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Cost Range -->
+        <div class="product-recommender__step product-recommender__step--hidden" data-step="2">
+          <h3 class="product-recommender__step-title">What's your trip cost range?</h3>
+          <div class="product-recommender__options">
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="under_500"
+              data-step="2"
+              aria-label="Select under €500"
+            >
+              <span class="product-recommender__option-label">&lt;€500</span>
+              <span class="product-recommender__option-description">Budget-friendly trips</span>
+            </button>
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="500_1500"
+              data-step="2"
+              aria-label="Select €500–€1500"
+            >
+              <span class="product-recommender__option-label">€500–€1500</span>
+              <span class="product-recommender__option-description">Mid-range trips</span>
+            </button>
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="over_1500"
+              data-step="2"
+              aria-label="Select over €1500"
+            >
+              <span class="product-recommender__option-label">&gt;€1500</span>
+              <span class="product-recommender__option-description">Premium trips</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Coverage Level -->
+        <div class="product-recommender__step product-recommender__step--hidden" data-step="3">
+          <h3 class="product-recommender__step-title">What coverage level do you need?</h3>
+          <div class="product-recommender__options">
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="standard"
+              data-step="3"
+              aria-label="Select Standard coverage"
+            >
+              <span class="product-recommender__option-label">Standard</span>
+              <span class="product-recommender__option-description">Essential protection</span>
+            </button>
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="premium"
+              data-step="3"
+              aria-label="Select Premium coverage"
+            >
+              <span class="product-recommender__option-label">Premium</span>
+              <span class="product-recommender__option-description">Enhanced protection</span>
+            </button>
+            <button
+              type="button"
+              class="product-recommender__option-card"
+              data-value="max"
+              data-step="3"
+              aria-label="Select Max coverage"
+            >
+              <span class="product-recommender__option-label">Max</span>
+              <span class="product-recommender__option-description">Maximum protection</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Recommendation Display (will be populated by JavaScript) -->
+      <div class="product-recommender__result product-recommender__result--hidden" id="product-recommender-result-{{ section.id }}">
+        <div class="product-recommender__product-card">
+          <div class="product-recommender__product-image-wrapper">
+            <img
+              class="product-recommender__product-image"
+              src=""
+              alt=""
+              loading="lazy"
+              width="100%"
+              height="100%"
+            >
+          </div>
+          <div class="product-recommender__product-content">
+            <h3 class="product-recommender__product-title"></h3>
+            <p class="product-recommender__product-copy"></p>
+            <div class="product-recommender__product-price"></div>
+            <ul class="product-recommender__product-benefits"></ul>
+            <button
+              type="button"
+              class="product-recommender__cta-button button"
+              data-cta-type="{{ section.settings.cta_type }}"
+            >
+              {{ section.settings.cta_text | default: "Add to Cart" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-recommender-section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-recommender-section--background-image {
+    background-image: var(--background-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .product-recommender-section--background-gradient {
+    background: linear-gradient(135deg, var(--gradient-start, #667eea) 0%, var(--gradient-end, #764ba2) 100%);
+  }
+
+  .product-recommender-section__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .product-recommender-section__header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .product-recommender-section__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+  }
+
+  .product-recommender-section__subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+
+  .product-recommender-section__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap, 24px);
+  }
+
+  /* Progress Indicator */
+  .product-recommender__progress {
+    margin-bottom: 32px;
+  }
+
+  .product-recommender__progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .product-recommender__progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .product-recommender__progress-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-background);
+    border: 2px solid var(--color-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .product-recommender__progress-step[data-active="true"] .product-recommender__progress-number {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    transform: scale(1.1);
+  }
+
+  .product-recommender__progress-step[data-completed="true"] .product-recommender__progress-number {
+    background: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  .product-recommender__progress-label {
+    font-size: 0.875rem;
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-recommender__progress-step[data-active="true"] .product-recommender__progress-label,
+  .product-recommender__progress-step[data-completed="true"] .product-recommender__progress-label {
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .product-recommender__progress-bar {
+    height: 2px;
+    background: rgba(var(--color-foreground-rgb), 0.2);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-recommender__progress-fill {
+    height: 100%;
+    background: var(--color-foreground);
+    transition: width 0.4s ease;
+    border-radius: 1px;
+  }
+
+  /* Selector Steps */
+  .product-recommender__selector {
+    position: relative;
+    min-height: 300px;
+  }
+
+  .product-recommender__step {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .product-recommender__step--hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .product-recommender__step-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .product-recommender__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Option Cards */
+  .product-recommender__option-card {
+    background: var(--color-background);
+    border: 2px solid rgba(var(--color-foreground-rgb), 0.2);
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-recommender__option-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-foreground);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-recommender__option-card:hover {
+    border-color: var(--color-foreground);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(var(--color-foreground-rgb), 0.15);
+  }
+
+  .product-recommender__option-card:hover::before {
+    opacity: 0.05;
+  }
+
+  .product-recommender__option-card[data-selected="true"] {
+    border-color: var(--color-foreground);
+    background: rgba(var(--color-foreground-rgb), 0.05);
+    box-shadow: 0 4px 16px rgba(var(--color-foreground-rgb), 0.1);
+  }
+
+  .product-recommender__option-card[data-selected="true"]::before {
+    opacity: 0.1;
+  }
+
+  .product-recommender__option-label {
+    font-size: 1.25rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    color: var(--color-foreground);
+  }
+
+  .product-recommender__option-description {
+    font-size: 0.875rem;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
+    color: var(--color-foreground);
+  }
+
+  /* Product Result Card */
+  .product-recommender__result {
+    animation: fadeIn 0.4s ease;
+  }
+
+  .product-recommender__result--hidden {
+    display: none;
+  }
+
+  .product-recommender__product-card {
+    background: var(--color-background);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(var(--color-foreground-rgb), 0.1);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .product-recommender__product-image-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(var(--color-foreground-rgb), 0.05);
+  }
+
+  .product-recommender__product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-recommender__product-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .product-recommender__product-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .product-recommender__product-copy {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .product-recommender__product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-foreground);
+  }
+
+  .product-recommender__product-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .product-recommender__product-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .product-recommender__product-benefits li::before {
+    content: '✓';
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  .product-recommender__cta-button {
+    width: 100%;
+    padding: 16px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  /* Responsive Design */
+  @media screen and (min-width: 750px) {
+    .product-recommender__product-card {
+      grid-template-columns: 300px 1fr;
+    }
+
+    .product-recommender__options {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-recommender-section__container {
+      padding: 0 16px;
+    }
+
+    .product-recommender__options {
+      grid-template-columns: 1fr;
+    }
+
+    .product-recommender__progress-label {
+      font-size: 0.75rem;
+    }
+
+    .product-recommender__product-card {
+      padding: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Recommender",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Benefit Content"
+        },
+        {
+          "type": "text",
+          "id": "benefit_text",
+          "label": "Benefit Text",
+          "default": "Benefit description"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon Type",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "icon",
+              "label": "Icon"
+            },
+            {
+              "value": "image",
+              "label": "Image"
+            }
+          ],
+          "default": "icon"
+        },
+        {
+          "type": "text",
+          "id": "icon_name",
+          "label": "Icon Name",
+          "info": "Enter icon name from theme icon set",
+          "visible_if": "{{ block.settings.icon_type == 'icon' }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "benefit_image",
+          "label": "Benefit Image",
+          "visible_if": "{{ block.settings.icon_type == 'image' }}"
+        }
+      ]
+    },
+    {
+      "type": "product_mapping",
+      "name": "Product Mapping",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Selection Criteria"
+        },
+        {
+          "type": "select",
+          "id": "trip_type",
+          "label": "Trip Type",
+          "options": [
+            {
+              "value": "single",
+              "label": "Single trip"
+            },
+            {
+              "value": "multi",
+              "label": "Multi-trip"
+            }
+          ],
+          "default": "single"
+        },
+        {
+          "type": "select",
+          "id": "cost_range",
+          "label": "Trip Cost Range",
+          "options": [
+            {
+              "value": "under_500",
+              "label": "<€500"
+            },
+            {
+              "value": "500_1500",
+              "label": "€500–€1500"
+            },
+            {
+              "value": "over_1500",
+              "label": ">€1500"
+            }
+          ],
+          "default": "under_500"
+        },
+        {
+          "type": "select",
+          "id": "coverage_level",
+          "label": "Coverage Level",
+          "options": [
+            {
+              "value": "standard",
+              "label": "Standard"
+            },
+            {
+              "value": "premium",
+              "label": "Premium"
+            },
+            {
+              "value": "max",
+              "label": "Max"
+            }
+          ],
+          "default": "standard"
+        },
+        {
+          "type": "header",
+          "content": "Product Configuration"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (Optional)",
+          "info": "Enter variant ID to use specific variant. Leave blank to use product's default variant. Variant ID can be found in product admin."
+        },
+        {
+          "type": "header",
+          "content": "Override Fields (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "override_title",
+          "label": "Product Title Override",
+          "info": "Leave blank to use product title"
+        },
+        {
+          "type": "textarea",
+          "id": "override_copy",
+          "label": "Short Copy Override",
+          "info": "Leave blank to use product description"
+        },
+        {
+          "type": "text",
+          "id": "override_price",
+          "label": "Price Override",
+          "info": "Leave blank to use product price. Format: €XX.XX"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Find Your Perfect Travel Insurance"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Answer a few questions to get personalized recommendations"
+    },
+    {
+      "type": "header",
+      "content": "Background Style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background Style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid Color"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "visible_if": "{{ section.settings.background_style == 'image' }}"
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Gradient Start Color",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Gradient End Color",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "select",
+      "id": "cta_type",
+      "label": "CTA Button Type",
+      "options": [
+        {
+          "value": "add_to_cart",
+          "label": "Add to Cart"
+        },
+        {
+          "value": "go_to_product",
+          "label": "Go to Product"
+        }
+      ],
+      "default": "add_to_cart"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Recommender",
+      "category": "t:categories.products"
+    }
+  ]
+}
+{% endschema %}
+
