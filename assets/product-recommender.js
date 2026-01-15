@@ -24,6 +24,72 @@ class ProductRecommender extends HTMLElement {
     this.initializeSelectors();
     this.initializeCTA();
     this.updateProgress();
+    this.optimizeForHomepage();
+  }
+
+  /**
+   * Apply homepage-specific optimizations
+   */
+  optimizeForHomepage() {
+    // Check if we're on homepage
+    const isHomepage = document.body.classList.contains('template-index') || 
+                       window.location.pathname === '/' || 
+                       window.location.pathname === '/index';
+    
+    if (isHomepage) {
+      // Lazy load images with Intersection Observer
+      this.setupLazyLoading();
+      
+      // Defer non-critical animations
+      this.deferAnimations();
+    }
+  }
+
+  /**
+   * Setup lazy loading for images
+   */
+  setupLazyLoading() {
+    const images = this.querySelectorAll('.product-recommender__product-image');
+    
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = /** @type {HTMLImageElement} */ (entry.target);
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+            }
+            observer.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '50px'
+      });
+
+      images.forEach(img => {
+        const htmlImg = /** @type {HTMLImageElement} */ (img);
+        if (htmlImg.dataset.src) {
+          imageObserver.observe(htmlImg);
+        }
+      });
+    }
+  }
+
+  /**
+   * Defer non-critical animations for better performance
+   */
+  deferAnimations() {
+    // Use requestIdleCallback if available
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        this.classList.add('product-recommender--animations-ready');
+      });
+    } else {
+      setTimeout(() => {
+        this.classList.add('product-recommender--animations-ready');
+      }, 100);
+    }
   }
 
   /**

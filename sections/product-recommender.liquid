@@ -26,7 +26,7 @@
   "
   {{ section.shopify_attributes }}
 >
-  <div class="product-recommender-section__container">
+  <div class="product-recommender-section__container{% if template.name == 'index' %} product-recommender-section__container--homepage{% endif %}">
     {% if section.settings.title != blank or section.settings.subtitle != blank %}
       <div class="product-recommender-section__header">
         {% if section.settings.title != blank %}
@@ -178,9 +178,10 @@
               class="product-recommender__product-image"
               src=""
               alt=""
-              loading="lazy"
+              loading="{% if template.name == 'index' %}lazy{% else %}eager{% endif %}"
               width="100%"
               height="100%"
+              decoding="async"
             >
           </div>
           <div class="product-recommender__product-content">
@@ -591,6 +592,50 @@
   .product-recommender__cta-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  /* Homepage-specific refinements */
+  .product-recommender-section__container--homepage {
+    /* Optimize spacing for homepage context */
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-recommender-section__container--homepage .product-recommender-section__header {
+      margin-bottom: 56px;
+    }
+
+    .product-recommender-section__container--homepage .product-recommender__product-card {
+      max-width: 1000px;
+    }
+  }
+
+  /* Performance optimizations for homepage */
+  .product-recommender-section__container--homepage .product-recommender__option-card {
+    will-change: transform;
+  }
+
+  .product-recommender-section__container--homepage .product-recommender__product-image {
+    content-visibility: auto;
+  }
+
+  /* Defer animations until ready */
+  .product-recommender:not(.product-recommender--animations-ready) .product-recommender__step {
+    animation: none;
+  }
+
+  .product-recommender.product-recommender--animations-ready .product-recommender__step {
+    animation: fadeIn 0.4s ease;
+  }
+
+  /* Reduce motion for homepage if user prefers */
+  @media (prefers-reduced-motion: reduce) {
+    .product-recommender-section__container--homepage .product-recommender__option-card {
+      transition: none;
+    }
+
+    .product-recommender-section__container--homepage .product-recommender__step {
+      animation: none;
+    }
   }
 {% endstylesheet %}
 
