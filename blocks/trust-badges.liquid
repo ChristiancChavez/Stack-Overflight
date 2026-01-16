@@ -4,12 +4,14 @@
   Can be used in product-details, cart, or any section
 {%- endcomment -%}
 
-{% render 'trust-badges', settings: block.settings %}
+<div {{ block.shopify_attributes }}>
+  {% render 'trust-badges', settings: block.settings %}
+</div>
 
 {% schema %}
 {
   "name": "Trust Badges",
-  "class": "trust-badges-block",
+  "tag": null,
   "settings": [
     {
       "type": "header",
