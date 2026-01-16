@@ -247,8 +247,323 @@ class ProductRecommender extends HTMLElement {
       await this.loadProductData(matchingMapping);
       this.displayProduct(matchingMapping);
     } else {
-      console.warn('No matching product found for selections:', this.selections);
+      // If no mapping found, use default recommendations
+      const defaultMapping = this.getDefaultRecommendation();
+      if (defaultMapping && defaultMapping.settings && defaultMapping.settings.product) {
+        await this.loadProductData(defaultMapping);
+        this.displayProduct(defaultMapping);
+      } else {
+        console.warn('No matching product found for selections:', this.selections);
+      }
     }
+  }
+
+  /**
+   * Get default recommendations based on selections with real product IDs
+   * @returns {{settings: {trip_type: string, cost_range: string, coverage_level: string, product: string, product_id: string, variant_id: string, variant_name: string, image_id?: string, override_title: string, override_copy: string, override_price: string}} | null}
+   */
+  getDefaultRecommendation() {
+    const { tripType, costRange, coverageLevel } = this.selections;
+    
+    // Default recommendations with real product IDs and variant IDs
+    const defaultRecommendations = {
+      // Single trip combinations
+      'single_under_500_standard': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'under_500',
+          coverage_level: 'standard',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258088484',
+          variant_name: 'Standard',
+          image_id: '37221019910180',
+          override_title: 'Basic Travel Protection',
+          override_copy: 'Perfect for short trips under €500. Essential coverage for peace of mind.',
+          override_price: '$20.00'
+        }
+      },
+      'single_under_500_premium': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'under_500',
+          coverage_level: 'premium',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258121252',
+          variant_name: 'Premium',
+          image_id: '37221020631076',
+          override_title: 'Premium Travel Protection',
+          override_copy: 'Enhanced coverage for your budget-friendly trip. Includes medical and trip cancellation.',
+          override_price: '$40.00'
+        }
+      },
+      'single_under_500_max': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'under_500',
+          coverage_level: 'max',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258121252', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37221020631076',
+          override_title: 'Maximum Travel Protection',
+          override_copy: 'Comprehensive coverage for your trip. Full protection including medical, cancellation, and baggage.',
+          override_price: '$40.00'
+        }
+      },
+      'single_500_1500_standard': {
+        settings: {
+          trip_type: 'single',
+          cost_range: '500_1500',
+          coverage_level: 'standard',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258481700',
+          variant_name: 'Standard',
+          image_id: '37220987273252',
+          override_title: 'Standard Travel Insurance',
+          override_copy: 'Reliable coverage for mid-range trips. Essential protection for your journey.',
+          override_price: '$50.00'
+        }
+      },
+      'single_500_1500_premium': {
+        settings: {
+          trip_type: 'single',
+          cost_range: '500_1500',
+          coverage_level: 'premium',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258514468',
+          variant_name: 'Premium',
+          image_id: '37220987797540',
+          override_title: 'Premium Travel Insurance',
+          override_copy: 'Enhanced protection for your mid-range trip. Comprehensive medical and cancellation coverage.',
+          override_price: '$80.00'
+        }
+      },
+      'single_500_1500_max': {
+        settings: {
+          trip_type: 'single',
+          cost_range: '500_1500',
+          coverage_level: 'max',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258514468', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37220987797540',
+          override_title: 'Maximum Travel Insurance',
+          override_copy: 'Complete protection for your trip. All-inclusive coverage for peace of mind.',
+          override_price: '$80.00'
+        }
+      },
+      'single_over_1500_standard': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'over_1500',
+          coverage_level: 'standard',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258874916',
+          variant_name: 'Standard',
+          image_id: '37220980031524',
+          override_title: 'Standard Premium Coverage',
+          override_copy: 'Essential protection for high-value trips. Reliable coverage for your investment.',
+          override_price: '$50.00'
+        }
+      },
+      'single_over_1500_premium': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'over_1500',
+          coverage_level: 'premium',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258907684',
+          variant_name: 'Premium',
+          image_id: '37220981768228',
+          override_title: 'Premium High-Value Coverage',
+          override_copy: 'Enhanced protection for premium trips. Comprehensive medical, cancellation, and baggage coverage.',
+          override_price: '$70.00'
+        }
+      },
+      'single_over_1500_max': {
+        settings: {
+          trip_type: 'single',
+          cost_range: 'over_1500',
+          coverage_level: 'max',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258907684', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37220981768228',
+          override_title: 'Maximum Premium Coverage',
+          override_copy: 'Ultimate protection for your premium trip. Full coverage including medical emergencies, trip cancellation, and premium benefits.',
+          override_price: '$70.00'
+        }
+      },
+      // Multi-trip combinations
+      'multi_under_500_standard': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'under_500',
+          coverage_level: 'standard',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258088484',
+          variant_name: 'Standard',
+          image_id: '37221019910180',
+          override_title: 'Multi-Trip Basic Protection',
+          override_copy: 'Coverage for multiple budget trips throughout the year. Essential protection for frequent travelers.',
+          override_price: '$20.00'
+        }
+      },
+      'multi_under_500_premium': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'under_500',
+          coverage_level: 'premium',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258121252',
+          variant_name: 'Premium',
+          image_id: '37221020631076',
+          override_title: 'Multi-Trip Premium Protection',
+          override_copy: 'Enhanced multi-trip coverage for budget travelers. Comprehensive protection for all your trips.',
+          override_price: '$40.00'
+        }
+      },
+      'multi_under_500_max': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'under_500',
+          coverage_level: 'max',
+          product: 'travel-document-check',
+          product_id: '8099666395172',
+          variant_id: '43165258121252', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37221020631076',
+          override_title: 'Multi-Trip Maximum Protection',
+          override_copy: 'Complete multi-trip coverage. Full protection for all your budget trips throughout the year.',
+          override_price: '$40.00'
+        }
+      },
+      'multi_500_1500_standard': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: '500_1500',
+          coverage_level: 'standard',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258481700',
+          variant_name: 'Standard',
+          image_id: '37220987273252',
+          override_title: 'Multi-Trip Standard Coverage',
+          override_copy: 'Reliable multi-trip protection for mid-range travelers. Essential coverage for frequent trips.',
+          override_price: '$50.00'
+        }
+      },
+      'multi_500_1500_premium': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: '500_1500',
+          coverage_level: 'premium',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258514468',
+          variant_name: 'Premium',
+          image_id: '37220987797540',
+          override_title: 'Multi-Trip Premium Coverage',
+          override_copy: 'Enhanced multi-trip protection. Comprehensive coverage for all your mid-range journeys.',
+          override_price: '$80.00'
+        }
+      },
+      'multi_500_1500_max': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: '500_1500',
+          coverage_level: 'max',
+          product: 'flight-delay-coverage',
+          product_id: '8099666231332',
+          variant_id: '43165258514468', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37220987797540',
+          override_title: 'Multi-Trip Maximum Coverage',
+          override_copy: 'Complete multi-trip protection. All-inclusive coverage for frequent mid-range travelers.',
+          override_price: '$80.00'
+        }
+      },
+      'multi_over_1500_standard': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'over_1500',
+          coverage_level: 'standard',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258874916',
+          variant_name: 'Standard',
+          image_id: '37220980031524',
+          override_title: 'Multi-Trip Premium Standard',
+          override_copy: 'Essential multi-trip protection for high-value travelers. Reliable coverage for premium trips.',
+          override_price: '$50.00'
+        }
+      },
+      'multi_over_1500_premium': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'over_1500',
+          coverage_level: 'premium',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258907684',
+          variant_name: 'Premium',
+          image_id: '37220981768228',
+          override_title: 'Multi-Trip Premium Plus',
+          override_copy: 'Enhanced multi-trip protection for premium travelers. Comprehensive coverage for all your high-value trips.',
+          override_price: '$70.00'
+        }
+      },
+      'multi_over_1500_max': {
+        settings: {
+          trip_type: 'multi',
+          cost_range: 'over_1500',
+          coverage_level: 'max',
+          product: 'trip-cancellation-insurance',
+          product_id: '8099664429092',
+          variant_id: '43165258907684', // Max uses Premium variant
+          variant_name: 'Premium',
+          image_id: '37220981768228',
+          override_title: 'Multi-Trip Ultimate Coverage',
+          override_copy: 'Ultimate multi-trip protection. Complete coverage for frequent premium travelers with maximum benefits.',
+          override_price: '$70.00'
+        }
+      }
+    };
+
+    const key = `${tripType}_${costRange}_${coverageLevel}`;
+    const recommendation = /** @type {any} */ (defaultRecommendations)[key];
+    
+    if (recommendation) {
+      return recommendation;
+    }
+    
+    // Fallback to a generic recommendation
+    return {
+      settings: {
+        trip_type: tripType || 'single',
+        cost_range: costRange || '500_1500',
+        coverage_level: coverageLevel || 'standard',
+        product: 'flight-delay-coverage',
+        product_id: '8099666231332',
+        variant_id: '43165258481700',
+        variant_name: 'Standard',
+        image_id: '37220987273252',
+        override_title: 'Travel Protection Plan',
+        override_copy: 'Comprehensive travel protection tailored to your needs. Get peace of mind for your journey.',
+        override_price: '$50.00'
+      }
+    };
   }
 
   /**
@@ -295,7 +610,7 @@ class ProductRecommender extends HTMLElement {
 
   /**
    * Load product data from Shopify
-   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
+   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, product_id?: string, variant_id?: string, variant_name?: string, image_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
    */
   async loadProductData(mapping) {
     if (!mapping || !mapping.settings || !mapping.settings.product) return;
@@ -310,10 +625,20 @@ class ProductRecommender extends HTMLElement {
 
       this.currentProduct = await response.json();
       
-      // Find variant if specified
+      // Find variant by ID if specified
       if (mapping.settings.variant_id) {
         const variantId = parseInt(mapping.settings.variant_id);
         this.currentVariant = this.currentProduct.variants.find(/** @param {any} v */ (v) => v.id === variantId);
+      }
+      
+      // Find variant by name if specified (and not found by ID)
+      if (!this.currentVariant && mapping.settings.variant_name) {
+        const variantName = mapping.settings.variant_name.trim();
+        this.currentVariant = this.currentProduct.variants.find(/** @param {any} v */ (v) => {
+          const title = (v.title || '').toLowerCase();
+          const name = variantName.toLowerCase();
+          return title === name || title.includes(name);
+        });
       }
       
       // Use first available variant if no variant specified
@@ -328,8 +653,48 @@ class ProductRecommender extends HTMLElement {
   }
 
   /**
+   * Get default benefits based on coverage level
+   * @param {string} coverageLevel - The coverage level (standard, premium, max)
+   * @returns {string[]} Array of benefit texts
+   */
+  getDefaultBenefits(coverageLevel) {
+    const benefits = /** @type {{[key: string]: string[]}} */ ({
+      'standard': [
+        '24/7 Travel Assistance',
+        'Trip Cancellation Coverage',
+        'Medical Emergency Protection'
+      ],
+      'premium': [
+        '24/7 Travel Assistance',
+        'Trip Cancellation & Interruption',
+        'Medical Emergency & Evacuation',
+        'Baggage Loss & Delay Coverage',
+        'Flight Delay Compensation'
+      ],
+      'max': [
+        '24/7 Premium Travel Assistance',
+        'Full Trip Cancellation & Interruption',
+        'Comprehensive Medical & Evacuation',
+        'Baggage Loss, Delay & Theft Coverage',
+        'Flight Delay & Missed Connection',
+        'Travel Document Replacement',
+        'Emergency Cash Transfer'
+      ]
+    });
+    
+    const defaultBenefits = benefits['standard'] || [];
+    
+    if (!coverageLevel) {
+      return defaultBenefits;
+    }
+    
+    const selectedBenefits = benefits[coverageLevel];
+    return selectedBenefits || defaultBenefits;
+  }
+
+  /**
    * Display the recommended product
-   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, variant_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
+   * @param {{settings?: {trip_type?: string, cost_range?: string, coverage_level?: string, product?: string, product_id?: string, variant_id?: string, variant_name?: string, image_id?: string, override_title?: string, override_copy?: string, override_price?: string}}} mapping - The product mapping object
    */
   displayProduct(mapping) {
     if (!this.currentProduct || !this.currentVariant || !mapping || !mapping.settings) {
@@ -347,49 +712,160 @@ class ProductRecommender extends HTMLElement {
     }
     resultContainer.classList.remove('product-recommender__result--hidden');
 
-    // Update product image
+    // Update product image - use image_id from mapping or variant's image_id
     const imageElement = /** @type {HTMLImageElement | null} */ (resultContainer.querySelector('.product-recommender__product-image'));
     if (imageElement) {
-      const imageUrl = this.currentVariant.featured_image || this.currentProduct.featured_image;
-      if (imageUrl) {
+      let imageUrl = '';
+      
+      // Helper function to safely get image URL
+      const getImageUrl = (/** @type {any} */ imageObj) => {
+        if (!imageObj) return '';
+        if (typeof imageObj === 'string') return imageObj;
+        if (imageObj.src && typeof imageObj.src === 'string') return imageObj.src;
+        return '';
+      };
+      
+      // Priority 1: Find image by image_id from mapping settings
+      if (mapping.settings.image_id && this.currentProduct.images && Array.isArray(this.currentProduct.images)) {
+        const imageId = parseInt(mapping.settings.image_id);
+        const foundImage = this.currentProduct.images.find(/** @param {any} img */ (img) => img && img.id === imageId);
+        if (foundImage) {
+          imageUrl = getImageUrl(foundImage);
+        }
+      }
+      
+      // Priority 2: Find image by variant's image_id
+      if (!imageUrl && this.currentVariant && this.currentVariant.image_id && this.currentProduct.images && Array.isArray(this.currentProduct.images)) {
+        const foundImage = this.currentProduct.images.find(/** @param {any} img */ (img) => img && img.id === this.currentVariant.image_id);
+        if (foundImage) {
+          imageUrl = getImageUrl(foundImage);
+        }
+      }
+      
+      // Priority 3: Use variant's featured_image
+      if (!imageUrl && this.currentVariant) {
+        imageUrl = getImageUrl(this.currentVariant.featured_image);
+      }
+      
+      // Priority 4: Use product's featured image
+      if (!imageUrl && this.currentProduct.image) {
+        imageUrl = getImageUrl(this.currentProduct.image);
+      }
+      
+      // Priority 5: Use first available product image
+      if (!imageUrl && this.currentProduct.images && Array.isArray(this.currentProduct.images) && this.currentProduct.images.length > 0) {
+        const firstImage = this.currentProduct.images[0];
+        imageUrl = getImageUrl(firstImage);
+      }
+      
+      // Set image URL if found
+      if (imageUrl && typeof imageUrl === 'string' && imageUrl.length > 0) {
         imageElement.src = imageUrl;
-        imageElement.alt = this.currentProduct.title;
-      }
-    }
-
-    // Update product title
-    const titleElement = resultContainer.querySelector('.product-recommender__product-title');
-    if (titleElement) {
-      titleElement.textContent = mapping.settings.override_title || this.currentProduct.title;
-    }
-
-    // Update product copy
-    const copyElement = resultContainer.querySelector('.product-recommender__product-copy');
-    if (copyElement) {
-      copyElement.textContent = mapping.settings.override_copy || this.currentProduct.description || '';
-    }
-
-    // Update product price
-    const priceElement = resultContainer.querySelector('.product-recommender__product-price');
-    if (priceElement) {
-      if (mapping.settings.override_price) {
-        priceElement.textContent = mapping.settings.override_price;
+        imageElement.alt = this.currentProduct.title || '';
       } else {
-        const price = (this.currentVariant.price / 100).toFixed(2);
-        priceElement.textContent = `€${price}`;
+        console.warn('No valid image URL found for product:', {
+          productId: this.currentProduct.id,
+          variantId: this.currentVariant?.id,
+          mappingImageId: mapping.settings.image_id,
+          hasImages: !!this.currentProduct.images,
+          imagesCount: this.currentProduct.images?.length || 0
+        });
+        // Hide image if no URL found
+        imageElement.style.display = 'none';
       }
+    }
+
+    // Update product title from Shopify (segunda columna)
+    const titleShopify = resultContainer.querySelector('.product-recommender__product-title--shopify');
+    if (titleShopify) {
+      const titleText = this.currentProduct.title;
+      titleShopify.textContent = titleText;
+    }
+
+    // Update product copy from Shopify (segunda columna)
+    const copyShopify = resultContainer.querySelector('.product-recommender__product-copy--shopify');
+    if (copyShopify) {
+      let copyText = '';
+      
+      // Extract text from body_html
+      if (this.currentProduct && this.currentProduct.body_html) {
+        // Create a temporary div to extract text from HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = this.currentProduct.body_html;
+        
+        // Get text content (this automatically strips HTML tags)
+        copyText = tempDiv.textContent || tempDiv.innerText || '';
+        
+        // Clean up whitespace
+        copyText = copyText.replace(/\s+/g, ' ').trim();
+      }
+      
+      // Fallback to description if available
+      if (!copyText && this.currentProduct && this.currentProduct.description) {
+        copyText = this.currentProduct.description;
+      }
+      
+      // IMPORTANT: Clear innerHTML first, then set textContent to ensure no HTML is rendered
+      copyShopify.innerHTML = '';
+      const htmlElement = /** @type {HTMLElement} */ (copyShopify);
+      htmlElement.textContent = copyText || '';
+    }
+
+    // Update product price badge above image
+    const priceBadge = resultContainer.querySelector('.product-recommender__price-badge');
+    if (priceBadge) {
+      let priceText = '';
+      
+      if (mapping.settings.override_price) {
+        priceText = mapping.settings.override_price;
+      } else if (this.currentVariant && this.currentVariant.price) {
+        // Handle price as string (e.g., "50.00") or number in cents
+        let priceValue = 0;
+        if (typeof this.currentVariant.price === 'string') {
+          priceValue = parseFloat(this.currentVariant.price);
+        } else if (typeof this.currentVariant.price === 'number') {
+          // If price is in cents, divide by 100
+          priceValue = this.currentVariant.price > 1000 ? this.currentVariant.price / 100 : this.currentVariant.price;
+        }
+        
+        // Always display prices in USD
+        const currencySymbol = '$';
+        const formattedPrice = priceValue.toFixed(2);
+        priceText = `${currencySymbol}${formattedPrice}`;
+      } else {
+        priceText = 'Price on request';
+      }
+      
+      priceBadge.textContent = priceText;
     }
 
     // Update benefits
     const benefitsList = resultContainer.querySelector('.product-recommender__product-benefits');
     if (benefitsList) {
       benefitsList.innerHTML = '';
-      this.benefits.forEach(benefit => {
-        if (benefit && benefit.settings && benefit.settings.benefit_text) {
-          const li = document.createElement('li');
-          li.textContent = benefit.settings.benefit_text;
-          benefitsList.appendChild(li);
-        }
+      
+      // Get benefits - use configured benefits or default benefits based on coverage level
+      let benefitsToDisplay = [];
+      
+      if (this.benefits && this.benefits.length > 0) {
+        // Use configured benefits from Theme Editor
+        benefitsToDisplay = this.benefits.map(benefit => {
+          if (benefit && benefit.settings && benefit.settings.benefit_text) {
+            return benefit.settings.benefit_text;
+          }
+          return null;
+        }).filter(b => b !== null);
+      } else {
+        // Use default benefits based on coverage level
+        const coverageLevel = mapping.settings.coverage_level || 'standard';
+        benefitsToDisplay = this.getDefaultBenefits(coverageLevel);
+      }
+      
+      // Display benefits
+      benefitsToDisplay.forEach(/** @param {string} benefitText */ (benefitText) => {
+        const li = document.createElement('li');
+        li.textContent = benefitText;
+        benefitsList.appendChild(li);
       });
     }
 
