@@ -271,7 +271,7 @@ function registerEventListeners() {
 
             callback.call(instance, ...args);
           } catch (error) {
-            console.error(error);
+            // Error handled silently
           }
         }
       },

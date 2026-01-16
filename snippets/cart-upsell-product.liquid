@@ -1,17 +1,11 @@
 {%- liquid
   assign product = product
   assign block = block
-  
-  # Use product title and description directly
   assign product_title = product.title
   assign product_description = product.description
-
-  # Get the first available variant
   assign selected_variant = product.selected_or_first_available_variant
   assign product_price = selected_variant.price | money
   assign compare_at_price = selected_variant.compare_at_price | money
-
-  # Get product image
   assign product_image = product.featured_image | default: product.images.first
 -%}
 

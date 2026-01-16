@@ -3,7 +3,7 @@
  * @description A collection of theme-specific events that can be used to trigger and listen for changes anywhere in the theme.
  * @example
  * document.dispatchEvent(new VariantUpdateEvent(variant, sectionId, { html }));
- * document.addEventListener(ThemeEvents.variantUpdate, (e) => { console.log(e.detail.variant) });
+ * document.addEventListener(ThemeEvents.variantUpdate, (e) => { /* handle variant update */ });
  */
 export class ThemeEvents {
   /** @static @constant {string} Event triggered when a variant is selected */

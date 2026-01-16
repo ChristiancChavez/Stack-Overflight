@@ -1,12 +1,10 @@
 {%- liquid
-  # Determine which upsell products to show based on cart contents
   assign show_upsell = false
   assign cart_product_ids = blank
   assign cart_product_handles = blank
   assign cart_product_types = blank
   assign cart_product_tags = blank
 
-  # Build arrays of cart product data for matching
   unless cart.empty?
     for item in cart.items
       assign cart_product_ids = cart_product_ids | append: item.product_id | append: ','
@@ -20,7 +18,6 @@
     endfor
   endunless
 
-  # Check if we should show upsell based on section settings
   if section.settings.enable_upsell and cart.item_count > 0
     assign show_upsell = true
   endif
@@ -56,7 +53,6 @@
               if product_handle != blank
                 assign upsell_product = all_products[product_handle]
                 if upsell_product != blank and upsell_product.available
-                  # Check if product is already in cart
                   assign product_in_cart = false
                   unless cart.empty?
                     for item in cart.items
@@ -67,7 +63,6 @@
                     endfor
                   endunless
 
-                  # Check trigger conditions
                   assign should_show = false
                   if block.settings.trigger_type == 'always'
                     assign should_show = true
@@ -98,7 +93,6 @@
                     endif
                   endif
 
-                  # Determine if we should render this product
                   if should_show and product_in_cart == false
                     assign should_render = true
                   endif

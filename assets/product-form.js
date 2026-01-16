@@ -251,7 +251,7 @@ class ProductFormComponent extends Component {
 
       return this.#updateCartQuantityFromData(cart);
     } catch (error) {
-      console.error('Failed to fetch cart quantity:', error);
+      // Error handled silently
       return 0;
     }
   }
@@ -443,7 +443,7 @@ class ProductFormComponent extends Component {
         }
       })
       .catch((error) => {
-        console.error(error);
+        // Error handled silently
       })
       .finally(() => {
         cartPerformance.measureFromEvent('add:user-action', event);
