@@ -165,29 +165,59 @@
       <!-- Product Recommendation Display (will be populated by JavaScript) -->
       <div class="product-recommender__result product-recommender__result--hidden" id="product-recommender-result-{{ section.id }}">
         <div class="product-recommender__product-card">
-          <div class="product-recommender__product-image-wrapper">
-            <img
-              class="product-recommender__product-image"
-              src=""
-              alt=""
-              loading="{% if template.name == 'index' %}lazy{% else %}eager{% endif %}"
-              width="100%"
-              height="100%"
-              decoding="async"
-            >
+          <!-- Primer contenedor: Row con dos columnas -->
+          <div class="product-recommender__product-main-row">
+            <!-- Primera columna: Solo imagen -->
+            <div class="product-recommender__product-image-column">
+              <div class="product-recommender__product-image-wrapper">
+                <span class="product-recommender__price-badge"></span>
+                <button
+                  type="button"
+                  class="product-recommender__pdp-link-button"
+                  aria-label="View product details"
+                  data-product-handle=""
+                >
+                  <span class="product-recommender__pdp-link-icon">+</span>
+                </button>
+                <img
+                  class="product-recommender__product-image"
+                  src=""
+                  alt=""
+                  loading="{% if template.name == 'index' %}lazy{% else %}eager{% endif %}"
+                  width="100%"
+                  height="100%"
+                  decoding="async"
+                >
+              </div>
+            </div>
+            
+            <!-- Segunda columna: Información del paquete -->
+            <div class="product-recommender__product-package-column">
+              <h3 class="product-recommender__product-title product-recommender__product-title--shopify"></h3>
+              <p class="product-recommender__product-copy product-recommender__product-copy--shopify"></p>
+              <ul class="product-recommender__product-benefits"></ul>
+            </div>
           </div>
-          <div class="product-recommender__product-content">
-            <h3 class="product-recommender__product-title"></h3>
-            <p class="product-recommender__product-copy"></p>
-            <div class="product-recommender__product-price"></div>
-            <ul class="product-recommender__product-benefits"></ul>
-            <button
-              type="button"
-              class="product-recommender__cta-button button"
-              data-cta-type="{{ section.settings.cta_type }}"
+          
+          <!-- Segundo contenedor: Botón CTA -->
+          <div class="product-recommender__product-cta-container">
+            <form
+              action="{{ routes.cart_add_url }}"
+              method="post"
+              enctype="multipart/form-data"
+              class="product-recommender__add-to-cart-form"
+              data-product-handle=""
             >
-              {{ section.settings.cta_text | default: "Add to Cart" }}
-            </button>
+              <input type="hidden" name="id" value="" class="product-recommender__variant-id-input">
+              <input type="hidden" name="quantity" value="1">
+              <button
+                type="submit"
+                class="product-recommender__cta-button button"
+                data-cta-type="{{ section.settings.cta_type }}"
+              >
+                {{ section.settings.cta_text | default: "Add to Cart" }}
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -205,6 +235,7 @@
   .product-recommender-section {
     position: relative;
     overflow: hidden;
+    padding: 15px 0;
   }
 
   .product-recommender-section--background-image {
@@ -226,13 +257,13 @@
 
   .product-recommender-section__header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 25px;
   }
 
   .product-recommender-section__title {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
-    margin: 0 0 16px 0;
+    margin: 0 0 5px 0;
     line-height: 1.2;
   }
 
@@ -250,9 +281,6 @@
   }
 
   /* Progress Indicator */
-  .product-recommender__progress {
-    margin-bottom: 32px;
-  }
 
   .product-recommender__progress-steps {
     display: flex;
@@ -361,9 +389,10 @@
   }
 
   .product-recommender__options {
-    display: grid;
-    gap: 24px;
-    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
     margin: 0 auto;
     width: 100%;
   }
@@ -482,13 +511,34 @@
   .product-recommender__product-card {
     background: var(--color-background);
     border-radius: 16px;
-    padding: 32px;
+    padding: 20px;
     box-shadow: 0 8px 32px rgba(var(--color-foreground-rgb), 0.1);
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 32px;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
+  }
+
+  /* Primer contenedor: Row con dos columnas */
+  .product-recommender__product-main-row {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .product-recommender__product-main-row {
+      flex-direction: column;
+    }
+  }
+
+  /* Primera columna: Solo imagen */
+  .product-recommender__product-image-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .product-recommender__product-image-wrapper {
@@ -497,6 +547,54 @@
     border-radius: 12px;
     overflow: hidden;
     background: rgba(var(--color-foreground-rgb), 0.05);
+    position: relative;
+  }
+
+  .product-recommender__price-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(var(--color-foreground-rgb), 0.15);
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .product-recommender__pdp-link-button {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    border: 2px solid var(--color-foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(var(--color-foreground-rgb), 0.15);
+  }
+
+  .product-recommender__pdp-link-button:hover {
+    background: lightgray;
+    color: var(--color-foreground);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(var(--color-foreground-rgb), 0.25);
+  }
+
+  .product-recommender__pdp-link-icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1;
   }
 
   .product-recommender__product-image {
@@ -505,10 +603,77 @@
     object-fit: cover;
   }
 
-  .product-recommender__product-content {
+  .product-recommender__product-copy--shopify {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.9;
+    text-align: left;
+  }
+
+  /* Segunda columna: Información del paquete */
+  .product-recommender__product-package-column {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    flex: 1;
+  }
+
+  .product-recommender__product-title--shopify {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .product-recommender__product-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .product-recommender__product-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .product-recommender__product-benefits li::before {
+    content: '✓';
+    font-weight: 700;
+    flex-shrink: 0;
+    background-color: var(--color-foreground);
+    color: white;
+    padding: 4px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-recommender__product-copy--package {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.9;
+    text-align: left;
+  }
+
+  /* Segundo contenedor: Botón CTA */
+  .product-recommender__product-cta-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   .product-recommender__product-title {
@@ -538,33 +703,31 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: flex-start;
+    width: 100%;
+    text-align: left;
   }
 
   .product-recommender__product-benefits li {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    font-size: 0.9375rem;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
     line-height: 1.5;
+    text-align: left;
+    width: 100%;
   }
 
   .product-recommender__product-benefits li::before {
     content: '✓';
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--color-foreground);
-    color: var(--color-background);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: white;
     font-weight: 700;
-    font-size: 0.75rem;
   }
 
   .product-recommender__cta-button {
-    width: 100%;
+    width: 300px;
     padding: 16px 32px;
     font-size: 1rem;
     font-weight: 600;
@@ -576,7 +739,17 @@
   /* Responsive Design */
   @media screen and (min-width: 750px) {
     .product-recommender__product-card {
-      grid-template-columns: 300px 1fr;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+    }
+
+    .product-recommender__options {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
   }
 
@@ -585,6 +758,13 @@
       padding: 0 16px;
     }
 
+    .product-recommender__options {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+     }
+     
     .product-recommender__step[data-step="1"] .product-recommender__options,
     .product-recommender__step[data-step="2"] .product-recommender__options,
     .product-recommender__step[data-step="3"] .product-recommender__options {
@@ -634,7 +814,7 @@
 
   @media screen and (min-width: 750px) {
     .product-recommender-section__container--homepage .product-recommender-section__header {
-      margin-bottom: 56px;
+      margin-bottom: 25px;
     }
 
     .product-recommender-section__container--homepage .product-recommender__product-card {
