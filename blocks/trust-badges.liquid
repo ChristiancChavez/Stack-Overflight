@@ -1,0 +1,220 @@
+{%- comment -%}
+  Trust Badges Block
+  Displays configurable trust badges to build customer confidence
+  Can be used in product-details, cart, or any section
+{%- endcomment -%}
+
+{% render 'trust-badges', settings: block.settings %}
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "class": "trust-badges-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "icon_size",
+      "label": "Icon size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show icons",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "spacing",
+      "label": "Spacing",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Badge 1"
+    },
+    {
+      "type": "text",
+      "id": "badge_1_text",
+      "label": "Text",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_1_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_1_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Badge 2"
+    },
+    {
+      "type": "text",
+      "id": "badge_2_text",
+      "label": "Text",
+      "default": "Secure Payment"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_2_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_2_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Badge 3"
+    },
+    {
+      "type": "text",
+      "id": "badge_3_text",
+      "label": "Text",
+      "default": "30-Day Returns"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_3_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_3_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Badge 4"
+    },
+    {
+      "type": "text",
+      "id": "badge_4_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_4_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_4_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Badge 5"
+    },
+    {
+      "type": "text",
+      "id": "badge_5_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_5_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_5_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Badge 6"
+    },
+    {
+      "type": "text",
+      "id": "badge_6_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_6_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_6_link",
+      "label": "Link (optional)"
+    }
+  ]
+}
+{% endschema %}
+
