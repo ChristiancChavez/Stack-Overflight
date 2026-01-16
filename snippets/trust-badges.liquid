@@ -30,6 +30,26 @@
   assign spacing = spacing | default: 'medium'
   assign class_name = class_name | default: ''
   
+  # Default text colors if not provided
+  if badge_1_text_color == blank
+    assign badge_1_text_color = '#ffffff'
+  endif
+  if badge_2_text_color == blank
+    assign badge_2_text_color = '#ffffff'
+  endif
+  if badge_3_text_color == blank
+    assign badge_3_text_color = '#ffffff'
+  endif
+  if badge_4_text_color == blank
+    assign badge_4_text_color = '#ffffff'
+  endif
+  if badge_5_text_color == blank
+    assign badge_5_text_color = '#ffffff'
+  endif
+  if badge_6_text_color == blank
+    assign badge_6_text_color = '#ffffff'
+  endif
+  
   # Collect badges (up to 6)
   assign badge_count = 0
   assign badges = ''
@@ -39,37 +59,44 @@
     assign badge_icon = ''
     assign badge_link = ''
     assign badge_color = ''
+    assign badge_text_color = ''
     
     if i == 1
       assign badge_text = badge_1_text
       assign badge_icon = badge_1_icon
       assign badge_link = badge_1_link
       assign badge_color = badge_1_color
+      assign badge_text_color = badge_1_text_color
     elsif i == 2
       assign badge_text = badge_2_text
       assign badge_icon = badge_2_icon
       assign badge_link = badge_2_link
       assign badge_color = badge_2_color
+      assign badge_text_color = badge_2_text_color
     elsif i == 3
       assign badge_text = badge_3_text
       assign badge_icon = badge_3_icon
       assign badge_link = badge_3_link
       assign badge_color = badge_3_color
+      assign badge_text_color = badge_3_text_color
     elsif i == 4
       assign badge_text = badge_4_text
       assign badge_icon = badge_4_icon
       assign badge_link = badge_4_link
       assign badge_color = badge_4_color
+      assign badge_text_color = badge_4_text_color
     elsif i == 5
       assign badge_text = badge_5_text
       assign badge_icon = badge_5_icon
       assign badge_link = badge_5_link
       assign badge_color = badge_5_color
+      assign badge_text_color = badge_5_text_color
     elsif i == 6
       assign badge_text = badge_6_text
       assign badge_icon = badge_6_icon
       assign badge_link = badge_6_link
       assign badge_color = badge_6_color
+      assign badge_text_color = badge_6_text_color
     endif
     
     if badge_text != blank
@@ -84,7 +111,13 @@
         assign badge_html = badge_html | append: '<div class="trust-badge__icon"><img src="' | append: badge_icon | append: '" alt="' | append: badge_text | append: '" loading="lazy"></div>'
       endif
       
-      assign badge_content = '<div class="trust-badge__text">' | append: badge_text | append: '</div>'
+      assign text_style = ''
+      if badge_text_color != blank and badge_text_color != ''
+        assign text_style = ' style="color: ' | append: badge_text_color | append: ';"'
+      else
+        assign text_style = ' style="color: #ffffff;"'
+      endif
+      assign badge_content = '<div class="trust-badge__text"' | append: text_style | append: '>' | append: badge_text | append: '</div>'
       
       if badge_link != blank
         assign is_external = false
@@ -211,6 +244,7 @@
     .trust-badge__text {
       font-size: var(--font-size--sm);
       line-height: var(--font-line-height--sm);
+      color: inherit;
     }
 
     .trust-badge__link {
