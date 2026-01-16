@@ -270,6 +270,34 @@
         "padding-block-end": 0
       }
     },
+    "trust_badges_Lr43Rt": {
+      "type": "trust-badges",
+      "name": "Trust Badges",
+      "settings": {
+        "layout": "horizontal",
+        "alignment": "center",
+        "icon_size": "small",
+        "show_icons": false,
+        "spacing": "large",
+        "class_name": "",
+        "badge_1_text": "Secure Checkout",
+        "badge_1_link": "",
+        "badge_2_text": "Installments",
+        "badge_2_link": "",
+        "badge_3_text": "AAA CHECK",
+        "badge_3_link": "",
+        "badge_4_text": "",
+        "badge_4_link": "",
+        "badge_5_text": "",
+        "badge_5_link": "",
+        "badge_6_text": "",
+        "badge_6_link": "",
+        "section_width": "page-width",
+        "color_scheme": "scheme-5",
+        "padding-block-start": 32,
+        "padding-block-end": 32
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -414,6 +442,7 @@
   },
   "order": [
     "main",
+    "trust_badges_Lr43Rt",
     "product_recommendations_qggXJq"
   ]
 }
