@@ -58,10 +58,14 @@
                 if upsell_product != blank and upsell_product.available
                   # Check if product is already in cart
                   assign product_in_cart = false
-                  assign product_id_string = upsell_product.id | append: ''
-                  if cart_product_ids contains product_id_string
-                    assign product_in_cart = true
-                  endif
+                  unless cart.empty?
+                    for item in cart.items
+                      if item.product_id == upsell_product.id
+                        assign product_in_cart = true
+                        break
+                      endif
+                    endfor
+                  endunless
 
                   # Check trigger conditions
                   assign should_show = false
@@ -140,13 +144,16 @@
 
   .cart-upsell__products {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--gap-lg);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 450px));
+    gap: var(--gap-md);
+    justify-content: center;
   }
 
   .cart-upsell__product {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   @media screen and (max-width: 749px) {
