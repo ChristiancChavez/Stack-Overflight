@@ -184,6 +184,11 @@
                 >
                   {% render 'cart-summary' %}
                 </div>
+
+                {%- comment -%}
+                  Cart upsell can be added to cart drawer if needed
+                  For now, it's only available on the cart page
+                {%- endcomment -%}
               </scroll-hint>
             {%- endif -%}
           </cart-items-component>

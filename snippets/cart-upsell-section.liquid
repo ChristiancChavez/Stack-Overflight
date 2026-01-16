@@ -1,34 +1,16 @@
 {%- comment -%}
-  This snippet renders the cart upsell section.
-  It can be included in both the cart drawer and cart page.
+  This snippet is a placeholder for cart upsell.
+  The actual cart-upsell section is rendered automatically
+  by Shopify when it's included in templates/cart.json.
   
-  Usage:
-  {% render 'cart-upsell-section' %}
+  For the cart drawer, we'll include the section content directly
+  by rendering the section file as a snippet.
 {%- endcomment -%}
 
-{%- liquid
-  # Find the cart-upsell section
-  assign upsell_section = blank
-  for section in sections
-    if section.type == 'cart-upsell'
-      assign upsell_section = section
-      break
-    endif
-  endfor
-
-  # If section not found in sections array, try to get it by ID
-  if upsell_section == blank
-    assign section_id = 'cart-upsell'
-    for section in sections
-      if section.id == section_id
-        assign upsell_section = section
-        break
-      endif
-    endfor
-  endif
--%}
-
-{%- if upsell_section != blank -%}
-  {%- render 'cart-upsell-section', section: upsell_section -%}
-{%- endif -%}
+{%- comment -%}
+  Note: In Shopify, sections are automatically rendered when added to templates.
+  For the cart page, the section is already in templates/cart.json.
+  For the cart drawer, we can't easily access sections, so we'll skip it there
+  or implement a simpler version if needed.
+{%- endcomment -%}
 

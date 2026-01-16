@@ -1,10 +1,10 @@
 {%- liquid
   assign product = product
   assign block = block
-  assign custom_title = block.settings.custom_title
-  assign custom_description = block.settings.custom_description
-  assign product_title = custom_title | default: product.title
-  assign product_description = custom_description | default: product.description
+  
+  # Use product title and description directly
+  assign product_title = product.title
+  assign product_description = product.description
 
   # Get the first available variant
   assign selected_variant = product.selected_or_first_available_variant

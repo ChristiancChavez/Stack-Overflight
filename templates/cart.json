@@ -63,6 +63,22 @@
         "padding-block-end": 0
       }
     },
+    "cart-upsell-section": {
+      "type": "cart-upsell",
+      "blocks": {},
+      "settings": {
+        "enable_upsell": true,
+        "title": "You might also like",
+        "heading_size": "h2",
+        "subtitle": "Complete your purchase with these recommended products",
+        "title_alignment": "center",
+        "max_products": 3,
+        "section_width": "page-width",
+        "color_scheme": "scheme-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
     "product_list_NNFgcy": {
       "type": "product-list",
       "blocks": {
@@ -260,6 +276,7 @@
   },
   "order": [
     "cart-section",
+    "cart-upsell-section",
     "product_list_NNFgcy"
   ]
 }
