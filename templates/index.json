@@ -26,9 +26,41 @@
         "padding-block-start": 64,
         "padding-block-end": 64
       }
+    },
+    "home_trust_badges": {
+      "type": "trust-badges",
+      "name": "Trust Badges",
+      "settings": {
+        "layout": "horizontal",
+        "alignment": "center",
+        "icon_size": "medium",
+        "show_icons": true,
+        "spacing": "medium",
+        "class_name": "",
+        "badge_1_text": "Since 1990",
+        "badge_1_icon": "shopify://shop_images/ChatGPT_Image_Jan_16_2026_12_09_20_PM.png",
+        "badge_1_link": "",
+        "badge_2_text": "Secure Payment",
+        "badge_2_icon": "shopify://shop_images/ChatGPT_Image_Jan_16_2026_12_17_17_PM.png",
+        "badge_2_link": "",
+        "badge_3_text": "30-Day Returns",
+        "badge_3_icon": "shopify://shop_images/ChatGPT_Image_Jan_16_2026_12_14_12_PM.png",
+        "badge_3_link": "",
+        "badge_4_text": "",
+        "badge_4_link": "",
+        "badge_5_text": "",
+        "badge_5_link": "",
+        "badge_6_text": "",
+        "badge_6_link": "",
+        "section_width": "page-width",
+        "color_scheme": "scheme-2",
+        "padding-block-start": 32,
+        "padding-block-end": 32
+      }
     }
   },
   "order": [
-    "product_recommender_homepage"
+    "product_recommender_homepage",
+    "home_trust_badges"
   ]
 }

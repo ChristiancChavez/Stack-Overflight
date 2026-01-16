@@ -1,327 +1,240 @@
-{%- liquid
-  # Trust badges snippet - Reusable and configurable
-  # 
-  # Usage examples:
-  # {% render 'trust-badges', settings: section.settings %}
-  # {% render 'trust-badges', settings: block.settings %}
-  # {% render 'trust-badges', 
-  #    badge_1_text: 'Free Shipping',
-  #    badge_1_icon: 'icon-shipping',
-  #    badge_1_link: '/pages/shipping',
-  #    layout: 'horizontal',
-  #    alignment: 'center'
-  # %}
+{%- comment -%}
+  Trust Badges Snippet
   
-  # Configuration options with fallbacks
+  Usage:
+  {% render 'trust-badges',
+    badge_1_text: 'Free Shipping',
+    badge_1_icon: 'icon-url',
+    badge_1_link: '/pages/shipping',
+    badge_2_text: 'Secure Payment',
+    badge_2_icon: 'icon-url',
+    badge_2_link: '/pages/payment',
+    badge_3_text: '30-Day Returns',
+    badge_3_icon: 'icon-url',
+    badge_3_link: '/pages/returns',
+    layout: 'horizontal',
+    alignment: 'center',
+    icon_size: 'medium',
+    show_icons: true,
+    spacing: 'medium',
+    class_name: 'custom-class'
+  %}
+{%- endcomment -%}
+
+{%- liquid
+  # Default values
   assign layout = layout | default: 'horizontal'
   assign alignment = alignment | default: 'center'
   assign icon_size = icon_size | default: 'medium'
   assign show_icons = show_icons | default: true
   assign spacing = spacing | default: 'medium'
-  assign max_badges = max_badges | default: 6
   assign class_name = class_name | default: ''
-  assign style_override = style_override | default: ''
   
-  # Override with settings if provided
-  if settings != blank
-    if settings.layout != blank
-      assign layout = settings.layout
-    endif
-    if settings.alignment != blank
-      assign alignment = settings.alignment
-    endif
-    if settings.icon_size != blank
-      assign icon_size = settings.icon_size
-    endif
-    if settings.show_icons != blank
-      assign show_icons = settings.show_icons
-    endif
-    if settings.spacing != blank
-      assign spacing = settings.spacing
-    endif
-    if settings.max_badges != blank
-      assign max_badges = settings.max_badges
-    endif
-    if settings.class_name != blank
-      assign class_name = settings.class_name
-    endif
-    if settings.style_override != blank
-      assign style_override = settings.style_override
-    endif
-  endif
-  
-  # Collect badges from settings or direct parameters (supports up to max_badges)
+  # Collect badges (up to 6)
   assign badge_count = 0
-  # Check direct parameters first
-  if badge_1_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  if badge_2_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  if badge_3_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  if badge_4_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  if badge_5_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  if badge_6_text != blank
-    assign badge_count = badge_count | plus: 1
-  endif
-  # If no direct parameters, check settings
-  if badge_count == 0 and settings != blank
-    for i in (1..max_badges)
-      assign badge_text_key = 'badge_' | append: i | append: '_text'
-      if settings[badge_text_key] != blank
-        assign badge_count = badge_count | plus: 1
+  assign badges = ''
+  
+  for i in (1..6)
+    assign badge_text = ''
+    assign badge_icon = ''
+    assign badge_link = ''
+    assign badge_color = ''
+    
+    if i == 1
+      assign badge_text = badge_1_text
+      assign badge_icon = badge_1_icon
+      assign badge_link = badge_1_link
+      assign badge_color = badge_1_color
+    elsif i == 2
+      assign badge_text = badge_2_text
+      assign badge_icon = badge_2_icon
+      assign badge_link = badge_2_link
+      assign badge_color = badge_2_color
+    elsif i == 3
+      assign badge_text = badge_3_text
+      assign badge_icon = badge_3_icon
+      assign badge_link = badge_3_link
+      assign badge_color = badge_3_color
+    elsif i == 4
+      assign badge_text = badge_4_text
+      assign badge_icon = badge_4_icon
+      assign badge_link = badge_4_link
+      assign badge_color = badge_4_color
+    elsif i == 5
+      assign badge_text = badge_5_text
+      assign badge_icon = badge_5_icon
+      assign badge_link = badge_5_link
+      assign badge_color = badge_5_color
+    elsif i == 6
+      assign badge_text = badge_6_text
+      assign badge_icon = badge_6_icon
+      assign badge_link = badge_6_link
+      assign badge_color = badge_6_color
+    endif
+    
+    if badge_text != blank
+      assign badge_count = badge_count | plus: 1
+      assign badge_style = ''
+      if badge_color != blank
+        assign badge_style = ' style="background-color: ' | append: badge_color | append: ';"'
       endif
-    endfor
-  endif
+      assign badge_html = '<div class="trust-badge trust-badge--icon-' | append: icon_size | append: ' trust-badge--card"' | append: badge_style | append: '>'
+      
+      if show_icons and badge_icon != blank
+        assign badge_html = badge_html | append: '<div class="trust-badge__icon"><img src="' | append: badge_icon | append: '" alt="' | append: badge_text | append: '" loading="lazy"></div>'
+      endif
+      
+      assign badge_content = '<div class="trust-badge__text">' | append: badge_text | append: '</div>'
+      
+      if badge_link != blank
+        assign is_external = false
+        if badge_link contains 'http://' or badge_link contains 'https://'
+          assign is_external = true
+        endif
+        
+        assign link_attrs = 'href="' | append: badge_link | append: '"'
+        if is_external
+          assign link_attrs = link_attrs | append: ' target="_blank" rel="noopener noreferrer"'
+        endif
+        
+        assign badge_html = badge_html | append: '<a class="trust-badge__link" ' | append: link_attrs | append: '>' | append: badge_content | append: '</a>'
+      else
+        assign badge_html = badge_html | append: badge_content
+      endif
+      
+      assign badge_html = badge_html | append: '</div>'
+      assign badges = badges | append: badge_html
+    endif
+  endfor
 -%}
 
 {%- if badge_count > 0 -%}
   <div 
     class="trust-badges trust-badges--{{ layout }} trust-badges--align-{{ alignment }} trust-badges--spacing-{{ spacing }} {{ class_name }}"
-    {%- if style_override != blank -%}
-      style="{{ style_override }}"
-    {%- endif -%}
   >
-    {%- for i in (1..max_badges) -%}
-      {%- liquid
-        assign badge_text_key = 'badge_' | append: i | append: '_text'
-        assign badge_icon_key = 'badge_' | append: i | append: '_icon'
-        assign badge_link_key = 'badge_' | append: i | append: '_link'
-        
-        # Try to get from direct parameters first, then from settings
-        assign badge_text = badge_1_text
-        if i == 2
-          assign badge_text = badge_2_text
-        elsif i == 3
-          assign badge_text = badge_3_text
-        elsif i == 4
-          assign badge_text = badge_4_text
-        elsif i == 5
-          assign badge_text = badge_5_text
-        elsif i == 6
-          assign badge_text = badge_6_text
-        endif
-        
-        if badge_text == blank and settings != blank
-          assign badge_text = settings[badge_text_key]
-        endif
-        
-        assign badge_icon = badge_1_icon
-        if i == 2
-          assign badge_icon = badge_2_icon
-        elsif i == 3
-          assign badge_icon = badge_3_icon
-        elsif i == 4
-          assign badge_icon = badge_4_icon
-        elsif i == 5
-          assign badge_icon = badge_5_icon
-        elsif i == 6
-          assign badge_icon = badge_6_icon
-        endif
-        
-        if badge_icon == blank and settings != blank
-          assign badge_icon = settings[badge_icon_key]
-        endif
-        
-        assign badge_link = badge_1_link
-        if i == 2
-          assign badge_link = badge_2_link
-        elsif i == 3
-          assign badge_link = badge_3_link
-        elsif i == 4
-          assign badge_link = badge_4_link
-        elsif i == 5
-          assign badge_link = badge_5_link
-        elsif i == 6
-          assign badge_link = badge_6_link
-        endif
-        
-        if badge_link == blank and settings != blank
-          assign badge_link = settings[badge_link_key]
-        endif
-      -%}
-      
-      {%- if badge_text != blank -%}
-        <div class="trust-badge trust-badge--icon-{{ icon_size }}">
-          {%- if show_icons and badge_icon != blank -%}
-            <div class="trust-badge__icon">
-              {%- if badge_icon contains '<svg' or badge_icon contains 'svg' -%}
-                {{ badge_icon }}
-              {%- elsif badge_icon contains 'http' or badge_icon contains '//' -%}
-                <img
-                  src="{{ badge_icon }}"
-                  alt="{{ badge_text | escape }}"
-                  width="40"
-                  height="40"
-                  loading="lazy"
-                >
-              {%- else -%}
-                <img
-                  src="{{ badge_icon | image_url: width: 40 }}"
-                  alt="{{ badge_text | escape }}"
-                  width="40"
-                  height="40"
-                  loading="lazy"
-                >
-              {%- endif -%}
-            </div>
-          {%- endif -%}
-          
-          <div class="trust-badge__text">
-            {%- if badge_link != blank -%}
-              {%- liquid
-                assign is_external = false
-                if badge_link contains 'http://' or badge_link contains 'https://'
-                  unless badge_link contains shop.domain
-                    assign is_external = true
-                  endunless
-                endif
-              -%}
-              <a 
-                href="{{ badge_link }}" 
-                class="trust-badge__link"
-                {%- if is_external -%} target="_blank" rel="noopener noreferrer"{%- endif -%}
-              >
-                {{ badge_text }}
-              </a>
-            {%- else -%}
-              <span>{{ badge_text }}</span>
-            {%- endif -%}
-          </div>
-        </div>
-      {%- endif -%}
-    {%- endfor -%}
+    {{ badges }}
   </div>
-{%- endif -%}
 
-{% stylesheet %}
-  .trust-badges {
-    display: flex;
-    gap: var(--gap-md);
-    flex-wrap: wrap;
-  }
-
-  .trust-badges--horizontal {
-    flex-direction: row;
-  }
-
-  .trust-badges--vertical {
-    flex-direction: column;
-  }
-
-  .trust-badges--align-left {
-    justify-content: flex-start;
-  }
-
-  .trust-badges--align-center {
-    justify-content: center;
-  }
-
-  .trust-badges--align-right {
-    justify-content: flex-end;
-  }
-
-  .trust-badges--spacing-small {
-    gap: var(--gap-sm);
-  }
-
-  .trust-badges--spacing-medium {
-    gap: var(--gap-md);
-  }
-
-  .trust-badges--spacing-large {
-    gap: var(--gap-lg);
-  }
-
-  .trust-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    padding: var(--padding-sm);
-    border-radius: var(--border-radius);
-    transition: all 0.3s ease;
-    flex: 0 1 auto;
-  }
-
-  .trust-badge:hover {
-    transform: translateY(-2px);
-  }
-
-  .trust-badges--horizontal .trust-badge {
-    flex-direction: row;
-  }
-
-  .trust-badges--vertical .trust-badge {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .trust-badge__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .trust-badge__icon img,
-  .trust-badge__icon svg {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .trust-badge--icon-small .trust-badge__icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .trust-badge--icon-medium .trust-badge__icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .trust-badge--icon-large .trust-badge__icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .trust-badge__text {
-    font-size: 0.875rem;
-    line-height: 1.4;
-    color: var(--color-foreground);
-  }
-
-  .trust-badge__link {
-    color: var(--color-foreground);
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-  }
-
-  .trust-badge__link:hover {
-    opacity: 0.8;
-    text-decoration: underline;
-  }
-
-  @media screen and (max-width: 749px) {
+  <style>
     .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap-md);
+    }
+
+    .trust-badges--horizontal {
+      flex-direction: row;
+    }
+
+    .trust-badges--vertical {
+      flex-direction: column;
+    }
+
+    .trust-badges--align-left {
+      justify-content: flex-start;
+    }
+
+    .trust-badges--align-center {
       justify-content: center;
     }
 
+    .trust-badges--align-right {
+      justify-content: flex-end;
+    }
+
+    .trust-badges--spacing-small {
+      gap: var(--gap-sm);
+    }
+
+    .trust-badges--spacing-medium {
+      gap: var(--gap-md);
+    }
+
+    .trust-badges--spacing-large {
+      gap: var(--gap-lg);
+    }
+
     .trust-badge {
-      flex: 1;
-      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--gap-xs);
+    }
+
+    .trust-badge--card {
+      background: var(--color-background, #fff);
+      border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+      border-radius: 8px;
+      padding: var(--padding-md);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--gap-sm);
+    }
+
+    .trust-badge--card:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .trust-badge__icon {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .trust-badge__icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .trust-badge--icon-small .trust-badge__icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .trust-badge--icon-medium .trust-badge__icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .trust-badge--icon-large .trust-badge__icon {
+      width: 64px;
+      height: 64px;
     }
 
     .trust-badge__text {
-      font-size: 0.75rem;
+      font-size: var(--font-size--sm);
+      line-height: var(--font-line-height--sm);
     }
-  }
-{% endstylesheet %}
 
+    .trust-badge__link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: var(--gap-xs);
+    }
+
+    .trust-badge--card .trust-badge__link {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--gap-sm);
+    }
+
+    .trust-badge__link:hover {
+      opacity: 0.8;
+    }
+
+    @media screen and (max-width: 749px) {
+      .trust-badges--horizontal {
+        justify-content: center;
+      }
+    }
+  </style>
+{%- endif -%}

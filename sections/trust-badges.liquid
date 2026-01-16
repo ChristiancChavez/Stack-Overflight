@@ -1,0 +1,444 @@
+{%- comment -%}
+  Trust Badges Section
+  Displays trust badges on the home page or any page
+{%- endcomment -%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {%- liquid
+    assign badge_1_icon_url = ''
+    if section.settings.badge_1_icon != blank
+      assign badge_1_icon_url = section.settings.badge_1_icon | image_url: width: 48
+    endif
+    assign badge_2_icon_url = ''
+    if section.settings.badge_2_icon != blank
+      assign badge_2_icon_url = section.settings.badge_2_icon | image_url: width: 48
+    endif
+    assign badge_3_icon_url = ''
+    if section.settings.badge_3_icon != blank
+      assign badge_3_icon_url = section.settings.badge_3_icon | image_url: width: 48
+    endif
+    assign badge_4_icon_url = ''
+    if section.settings.badge_4_icon != blank
+      assign badge_4_icon_url = section.settings.badge_4_icon | image_url: width: 48
+    endif
+    assign badge_5_icon_url = ''
+    if section.settings.badge_5_icon != blank
+      assign badge_5_icon_url = section.settings.badge_5_icon | image_url: width: 48
+    endif
+    assign badge_6_icon_url = ''
+    if section.settings.badge_6_icon != blank
+      assign badge_6_icon_url = section.settings.badge_6_icon | image_url: width: 48
+    endif
+  -%}
+  {% render 'trust-badges',
+    badge_1_text: section.settings.badge_1_text,
+    badge_1_icon: badge_1_icon_url,
+    badge_1_link: section.settings.badge_1_link,
+    badge_1_color: section.settings.badge_1_color,
+    badge_1_text_color: section.settings.badge_1_text_color,
+    badge_2_text: section.settings.badge_2_text,
+    badge_2_icon: badge_2_icon_url,
+    badge_2_link: section.settings.badge_2_link,
+    badge_2_color: section.settings.badge_2_color,
+    badge_2_text_color: section.settings.badge_2_text_color,
+    badge_3_text: section.settings.badge_3_text,
+    badge_3_icon: badge_3_icon_url,
+    badge_3_link: section.settings.badge_3_link,
+    badge_3_color: section.settings.badge_3_color,
+    badge_3_text_color: section.settings.badge_3_text_color,
+    badge_4_text: section.settings.badge_4_text,
+    badge_4_icon: badge_4_icon_url,
+    badge_4_link: section.settings.badge_4_link,
+    badge_4_color: section.settings.badge_4_color,
+    badge_4_text_color: section.settings.badge_4_text_color,
+    badge_5_text: section.settings.badge_5_text,
+    badge_5_icon: badge_5_icon_url,
+    badge_5_link: section.settings.badge_5_link,
+    badge_5_color: section.settings.badge_5_color,
+    badge_5_text_color: section.settings.badge_5_text_color,
+    badge_6_text: section.settings.badge_6_text,
+    badge_6_icon: badge_6_icon_url,
+    badge_6_link: section.settings.badge_6_link,
+    badge_6_color: section.settings.badge_6_color,
+    badge_6_text_color: section.settings.badge_6_text_color,
+    layout: section.settings.layout,
+    alignment: section.settings.alignment,
+    icon_size: section.settings.icon_size,
+    show_icons: section.settings.show_icons,
+    spacing: section.settings.spacing,
+    class_name: section.settings.class_name
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "tag": "section",
+  "class": "trust-badges-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "icon_size",
+      "label": "Icon size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show icons",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "spacing",
+      "label": "Spacing",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "text",
+      "id": "class_name",
+      "label": "Custom CSS class",
+      "info": "Optional custom CSS class to add to the trust badges container"
+    },
+    {
+      "type": "header",
+      "content": "Badge 1"
+    },
+    {
+      "type": "text",
+      "id": "badge_1_text",
+      "label": "Text",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_1_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_1_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_1_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_1_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge 2"
+    },
+    {
+      "type": "text",
+      "id": "badge_2_text",
+      "label": "Text",
+      "default": "Secure Payment"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_2_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_2_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_2_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_2_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge 3"
+    },
+    {
+      "type": "text",
+      "id": "badge_3_text",
+      "label": "Text",
+      "default": "30-Day Returns"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_3_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_3_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_3_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_3_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge 4"
+    },
+    {
+      "type": "text",
+      "id": "badge_4_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_4_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_4_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_4_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_4_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge 5"
+    },
+    {
+      "type": "text",
+      "id": "badge_5_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_5_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_5_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_5_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_5_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge 6"
+    },
+    {
+      "type": "text",
+      "id": "badge_6_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_6_icon",
+      "label": "Icon"
+    },
+    {
+      "type": "url",
+      "id": "badge_6_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "color",
+      "id": "badge_6_color",
+      "label": "Background color",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_6_text_color",
+      "label": "Text color",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "settings": {
+        "badge_1_text": "Free Shipping",
+        "badge_2_text": "Secure Payment",
+        "badge_3_text": "30-Day Returns",
+        "layout": "horizontal",
+        "alignment": "center",
+        "icon_size": "medium",
+        "show_icons": true,
+        "spacing": "medium"
+      }
+    }
+  ]
+}
+{% endschema %}
+
