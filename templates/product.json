@@ -247,6 +247,21 @@
                 }
               },
               "block_order": []
+            },
+            "trust_badges_default": {
+              "type": "trust-badges",
+              "name": "Trust Badges",
+              "settings": {
+                "layout": "horizontal",
+                "alignment": "center",
+                "icon_size": "medium",
+                "show_icons": true,
+                "spacing": "medium",
+                "badge_1_text": "Free Shipping",
+                "badge_2_text": "Secure Payment",
+                "badge_3_text": "30-Day Returns"
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -254,7 +269,8 @@
             "text_aEtTtq",
             "divider_VJhene",
             "variant_picker_R3rGDr",
-            "buy_buttons_eYQEYi"
+            "buy_buttons_eYQEYi",
+            "trust_badges_default"
           ]
         }
       },

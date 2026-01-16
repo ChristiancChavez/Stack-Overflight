@@ -24,22 +24,6 @@
         <div class="cart-page__summary">
           {%- content_for 'block', id: 'cart-page-summary', type: '_cart-summary' -%}
         </div>
-
-        {%- comment -%}
-          Trust badges to build customer confidence
-        {%- endcomment -%}
-        <div class="cart-page__trust-badges">
-          {% render 'trust-badges', 
-            badge_1_text: 'Free Shipping',
-            badge_2_text: 'Secure Payment',
-            badge_3_text: '30-Day Returns',
-            layout: 'horizontal',
-            alignment: 'center',
-            icon_size: 'medium',
-            show_icons: true,
-            spacing: 'medium'
-          %}
-        </div>
       {%- endunless -%}
 
       {%- comment -%}
@@ -95,11 +79,6 @@
 
   .cart-page__summary {
     padding-top: var(--padding-xl);
-  }
-
-  .cart-page__trust-badges {
-    padding-top: var(--padding-md);
-    padding-bottom: var(--padding-md);
   }
 
   @media screen and (min-width: 750px) {
@@ -174,6 +153,9 @@
     },
     {
       "type": "spacer"
+    },
+    {
+      "type": "trust-badges"
     }
   ],
   "settings": [
