@@ -934,12 +934,49 @@ class ProductRecommender extends HTMLElement {
       });
     }
 
-    // Store product data for CTA
-    const ctaButton = /** @type {HTMLElement | null} */ (resultContainer.querySelector('.product-recommender__cta-button'));
-    if (ctaButton) {
-      ctaButton.dataset.productId = String(this.currentProduct.id);
-      ctaButton.dataset.variantId = String(this.currentVariant.id);
-      ctaButton.dataset.productHandle = this.currentProduct.handle;
+    // Store product data for CTA form
+    const addToCartForm = /** @type {HTMLFormElement | null} */ (resultContainer.querySelector('.product-recommender__add-to-cart-form'));
+    const variantIdInput = /** @type {HTMLInputElement | null} */ (resultContainer.querySelector('.product-recommender__variant-id-input'));
+    const ctaButton = /** @type {HTMLButtonElement | null} */ (resultContainer.querySelector('.product-recommender__cta-button'));
+    
+    if (addToCartForm && variantIdInput && this.currentVariant) {
+      // Set variant ID in the form
+      variantIdInput.value = String(this.currentVariant.id);
+      
+      // Store product handle for navigation if needed
+      if (this.currentProduct.handle) {
+        addToCartForm.dataset.productHandle = this.currentProduct.handle;
+      }
+      
+      // Handle form submission for add to cart
+      const ctaType = ctaButton?.dataset.ctaType || 'add_to_cart';
+      if (ctaType === 'add_to_cart') {
+        // Form will submit natively to /cart/add
+        // Just add loading state on submit
+        addToCartForm.addEventListener('submit', (e) => {
+          if (ctaButton) {
+            ctaButton.disabled = true;
+            const originalText = ctaButton.textContent;
+            ctaButton.textContent = 'Adding...';
+            
+            // Reset button after a delay (in case of error)
+            setTimeout(() => {
+              if (ctaButton.disabled) {
+                ctaButton.disabled = false;
+                ctaButton.textContent = originalText;
+              }
+            }, 5000);
+          }
+        });
+      } else {
+        // For "go to product" type, prevent form submission and navigate
+        addToCartForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (this.currentProduct && this.currentProduct.handle) {
+            window.location.href = `/products/${this.currentProduct.handle}`;
+          }
+        });
+      }
     }
 
     // Initialize PDP link button
@@ -956,111 +993,11 @@ class ProductRecommender extends HTMLElement {
   }
 
   /**
-   * Initialize CTA button
+   * Initialize CTA form (form submission is handled natively by Shopify)
    */
   initializeCTA() {
-    const ctaButton = /** @type {HTMLElement | null} */ (this.querySelector('.product-recommender__cta-button'));
-    if (ctaButton) {
-      ctaButton.addEventListener('click', () => {
-        this.handleCTAClick(ctaButton);
-      });
-    }
-  }
-
-  /**
-   * Handle CTA button click
-   * @param {HTMLElement} button - The CTA button element
-   */
-  async handleCTAClick(button) {
-    const htmlButton = /** @type {HTMLButtonElement} */ (button);
-    const ctaType = htmlButton.dataset.ctaType || 'add_to_cart';
-    
-    if (ctaType === 'add_to_cart') {
-      await this.addToCart(htmlButton);
-    } else {
-      // Navigate to product page
-      const productHandle = htmlButton.dataset.productHandle;
-      if (productHandle) {
-        window.location.href = `/products/${productHandle}`;
-      }
-    }
-  }
-
-  /**
-   * Add product to cart
-   * @param {HTMLButtonElement} button - The CTA button element
-   */
-  async addToCart(button) {
-    const variantId = button.dataset.variantId;
-    if (!variantId) {
-      console.error('Variant ID not found');
-      return;
-    }
-
-    // Disable button and show loading state
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Adding...';
-
-    try {
-      // Create form data
-      const formData = new FormData();
-      formData.append('id', variantId);
-      formData.append('quantity', '1');
-      formData.append('sections', this.sectionId);
-
-      // Use basic fetch config (fetchConfig utility not available in this context)
-      const fetchCfg = {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      };
-
-      const response = await fetch(Theme.routes.cart_add_url, {
-        ...fetchCfg,
-        headers: {
-          ...fetchCfg.headers,
-          Accept: 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.status) {
-        // Error occurred
-        console.error('Add to cart error:', data.message);
-        this.showErrorMessage(button, data.message || 'Failed to add product to cart');
-        button.disabled = false;
-        button.textContent = originalText;
-      } else {
-        // Success
-        button.textContent = 'Added to Cart!';
-        
-        // Dispatch cart add event for other components
-        document.dispatchEvent(
-          new CustomEvent('cart:add', {
-            detail: {
-              items: data.items || [],
-              sections: data.sections || {}
-            },
-            bubbles: true
-          })
-        );
-
-        // Reset button after delay
-        setTimeout(() => {
-          button.disabled = false;
-          button.textContent = originalText;
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      this.showErrorMessage(button, 'An error occurred. Please try again.');
-      button.disabled = false;
-      button.textContent = originalText;
-    }
+    // Form submission is handled natively - no JavaScript needed
+    // The form will submit to /cart/add and Shopify will handle it
   }
 
   /**
