@@ -89,9 +89,7 @@
             "trigger_type": "always",
             "trigger_value": "Trigger Value",
             "trigger_total": 0,
-            "trigger_count": 1,
-            "custom_title": "",
-            "custom_description": ""
+            "trigger_count": 1
           }
         },
         "upsell_product_TMEePj": {
@@ -101,9 +99,7 @@
             "trigger_type": "cart_total",
             "trigger_value": "Trigger Value",
             "trigger_total": 40,
-            "trigger_count": 1,
-            "custom_title": "",
-            "custom_description": ""
+            "trigger_count": 1
           }
         },
         "upsell_product_ApYjbM": {
@@ -113,9 +109,7 @@
             "trigger_type": "cart_count",
             "trigger_value": "Trigger Value",
             "trigger_total": 0,
-            "trigger_count": 2,
-            "custom_title": "",
-            "custom_description": ""
+            "trigger_count": 2
           }
         }
       },
