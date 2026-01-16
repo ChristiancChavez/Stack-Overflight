@@ -26,6 +26,11 @@
         </div>
       {%- endunless -%}
 
+      {%- comment -%}
+        Cart upsell section is rendered automatically by Shopify
+        when included in templates/cart.json order
+      {%- endcomment -%}
+
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>

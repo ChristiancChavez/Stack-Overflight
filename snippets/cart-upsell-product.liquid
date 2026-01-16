@@ -1,0 +1,229 @@
+{%- liquid
+  assign product = product
+  assign block = block
+  
+  # Use product title and description directly
+  assign product_title = product.title
+  assign product_description = product.description
+
+  # Get the first available variant
+  assign selected_variant = product.selected_or_first_available_variant
+  assign product_price = selected_variant.price | money
+  assign compare_at_price = selected_variant.compare_at_price | money
+
+  # Get product image
+  assign product_image = product.featured_image | default: product.images.first
+-%}
+
+<div class="cart-upsell-product">
+  <div class="cart-upsell-product__image-wrapper">
+    <a href="{{ product.url }}" class="cart-upsell-product__link">
+      {%- if product_image != blank -%}
+        <img
+          src="{{ product_image | image_url: width: 300 }}"
+          srcset="{{ product_image | image_url: width: 300 }} 1x, {{ product_image | image_url: width: 600 }} 2x"
+          alt="{{ product_image.alt | escape }}"
+          width="300"
+          height="300"
+          loading="lazy"
+          class="cart-upsell-product__image"
+        >
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'cart-upsell-product__image cart-upsell-product__image--placeholder' }}
+      {%- endif -%}
+    </a>
+  </div>
+
+  <div class="cart-upsell-product__info">
+    <h3 class="cart-upsell-product__title">
+      <a href="{{ product.url }}" class="cart-upsell-product__title-link">
+        {{ product_title }}
+      </a>
+    </h3>
+
+      {%- if product_description != blank -%}
+      <p class="cart-upsell-product__description">
+        {{ product_description | strip_html | truncate: 60 }}
+      </p>
+    {%- endif -%}
+
+    <div class="cart-upsell-product__price">
+      {%- if compare_at_price > product_price -%}
+        <span class="cart-upsell-product__price--compare">
+          {{ compare_at_price }}
+        </span>
+        <span class="cart-upsell-product__price--current">
+          {{ product_price }}
+        </span>
+      {%- else -%}
+        <span class="cart-upsell-product__price--current">
+          {{ product_price }}
+        </span>
+      {%- endif -%}
+    </div>
+
+    {%- if product.available -%}
+      <form
+        action="{{ routes.cart_add_url }}"
+        method="post"
+        enctype="multipart/form-data"
+        class="cart-upsell-product__form"
+      >
+        <input type="hidden" name="id" value="{{ selected_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button
+          type="submit"
+          class="button cart-upsell-product__button"
+          aria-label="{{ 'products.product.add_to_cart' | t: product: product.title }}"
+        >
+          {{ 'products.product.add_to_cart' | t }}
+        </button>
+      </form>
+    {%- else -%}
+      <button
+        type="button"
+        class="button cart-upsell-product__button cart-upsell-product__button--disabled"
+        disabled
+      >
+        {{ 'products.product.sold_out' | t }}
+      </button>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .cart-upsell-product {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-sm);
+    padding: var(--padding-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background: var(--color-background);
+    transition: all 0.3s ease;
+    max-width: 400px;
+    max-height: 400px;
+    width: 100%;
+  }
+  @media (max-width: 768px) {
+    .cart-upsell-product {
+      flex-direction: column;
+    }
+  }
+
+  .cart-upsell-product:hover {
+    border-color: var(--color-foreground);
+    box-shadow: 0 4px 12px rgba(var(--color-foreground-rgb), 0.1);
+    transform: translateY(-2px);
+  }
+
+  .cart-upsell-product__image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 250px;
+    max-height: 250px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    background: var(--color-background-secondary);
+  }
+
+  .cart-upsell-product__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cart-upsell-product__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .cart-upsell-product:hover .cart-upsell-product__image {
+    transform: scale(1.05);
+  }
+
+  .cart-upsell-product__image--placeholder {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+
+  .cart-upsell-product__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    flex: 1;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    min-width: 150px;
+  }
+
+  .cart-upsell-product__title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .cart-upsell-product__title-link {
+    color: var(--color-foreground);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .cart-upsell-product__title-link:hover {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .cart-upsell-product__description {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cart-upsell-product__price {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .cart-upsell-product__price--compare {
+    text-decoration: line-through;
+    opacity: 0.6;
+    color: var(--color-foreground);
+  }
+
+  .cart-upsell-product__price--current {
+    color: var(--color-foreground);
+  }
+
+  .cart-upsell-product__form {
+    margin-top: auto;
+  }
+
+  .cart-upsell-product__button {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .cart-upsell-product__button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+{% endstylesheet %}
+

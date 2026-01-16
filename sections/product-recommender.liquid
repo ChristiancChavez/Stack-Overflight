@@ -411,7 +411,7 @@
   .product-recommender__option-card {
     background: var(--color-background);
     border: 1.5px solid rgba(var(--color-foreground-rgb), 0.15);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 32px 24px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -445,12 +445,13 @@
     right: 0;
     bottom: 0;
     border: 2px solid var(--color-foreground);
-    border-radius: 16px;
+    border-radius: 8px;
     opacity: 0;
     transition: opacity 0.4s ease;
   }
 
   .product-recommender__option-card:hover {
+    background: lightgray;
     border-color: rgba(var(--color-foreground-rgb), 0.3);
     transform: translateY(-6px) scale(1.02);
     box-shadow: 

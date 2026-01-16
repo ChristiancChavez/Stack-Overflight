@@ -63,9 +63,69 @@
         "padding-block-start": 24,
         "padding-block-end": 0
       }
+    },
+    "cart_upsell_VDGbP9": {
+      "type": "cart-upsell",
+      "blocks": {
+        "upsell_product_QGjD7E": {
+          "type": "upsell_product",
+          "settings": {
+            "product": "flight-delay-coverage",
+            "trigger_type": "always",
+            "trigger_value": "Trigger Value",
+            "trigger_total": 0,
+            "trigger_count": 1,
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "upsell_product_TMEePj": {
+          "type": "upsell_product",
+          "settings": {
+            "product": "travel-document-check",
+            "trigger_type": "cart_total",
+            "trigger_value": "Trigger Value",
+            "trigger_total": 40,
+            "trigger_count": 1,
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "upsell_product_ApYjbM": {
+          "type": "upsell_product",
+          "settings": {
+            "product": "trip-cancellation-insurance",
+            "trigger_type": "cart_count",
+            "trigger_value": "Trigger Value",
+            "trigger_total": 0,
+            "trigger_count": 2,
+            "custom_title": "",
+            "custom_description": ""
+          }
+        }
+      },
+      "block_order": [
+        "upsell_product_QGjD7E",
+        "upsell_product_TMEePj",
+        "upsell_product_ApYjbM"
+      ],
+      "name": "Cart Upsell",
+      "settings": {
+        "enable_upsell": true,
+        "title": "You might also like",
+        "heading_size": "h2",
+        "subtitle": "Complete your purchase with these recommended products",
+        "title_alignment": "center",
+        "max_products": 3,
+        "section_width": "page-width",
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
-    "cart-section"
+    "cart-section",
+    "cart_upsell_VDGbP9"
   ]
 }

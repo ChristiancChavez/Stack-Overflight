@@ -1,0 +1,369 @@
+{%- liquid
+  # Determine which upsell products to show based on cart contents
+  assign show_upsell = false
+  assign cart_product_ids = blank
+  assign cart_product_handles = blank
+  assign cart_product_types = blank
+  assign cart_product_tags = blank
+
+  # Build arrays of cart product data for matching
+  unless cart.empty?
+    for item in cart.items
+      assign cart_product_ids = cart_product_ids | append: item.product_id | append: ','
+      assign cart_product_handles = cart_product_handles | append: item.product.handle | append: ','
+      assign cart_product_types = cart_product_types | append: item.product.type | append: ','
+      if item.product.tags.size > 0
+        for tag in item.product.tags
+          assign cart_product_tags = cart_product_tags | append: tag | append: ','
+        endfor
+      endif
+    endfor
+  endunless
+
+  # Check if we should show upsell based on section settings
+  if section.settings.enable_upsell and cart.item_count > 0
+    assign show_upsell = true
+  endif
+
+  assign max_products = section.settings.max_products | default: 3
+-%}
+
+{%- if show_upsell -%}
+  <div
+    class="cart-upsell color-{{ section.settings.color_scheme }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="cart-upsell__container section--{{ section.settings.section_width }}">
+      {%- if section.settings.title != blank -%}
+        <h2 class="cart-upsell__title {{ section.settings.heading_size }}">
+          {{ section.settings.title }}
+        </h2>
+      {%- endif -%}
+
+      {%- if section.settings.subtitle != blank -%}
+        <p class="cart-upsell__subtitle">
+          {{ section.settings.subtitle }}
+        </p>
+      {%- endif -%}
+
+      <div class="cart-upsell__products">
+        {%- assign upsell_count = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'upsell_product' and upsell_count < max_products -%}
+            {%- liquid
+              assign product_handle = block.settings.product
+              assign should_render = false
+              if product_handle != blank
+                assign upsell_product = all_products[product_handle]
+                if upsell_product != blank and upsell_product.available
+                  # Check if product is already in cart
+                  assign product_in_cart = false
+                  unless cart.empty?
+                    for item in cart.items
+                      if item.product_id == upsell_product.id
+                        assign product_in_cart = true
+                        break
+                      endif
+                    endfor
+                  endunless
+
+                  # Check trigger conditions
+                  assign should_show = false
+                  if block.settings.trigger_type == 'always'
+                    assign should_show = true
+                  elsif block.settings.trigger_type == 'product_type'
+                    assign trigger_value = block.settings.trigger_value | append: ','
+                    if cart_product_types contains trigger_value
+                      assign should_show = true
+                    endif
+                  elsif block.settings.trigger_type == 'product_tag'
+                    assign trigger_value = block.settings.trigger_value | append: ','
+                    if cart_product_tags contains trigger_value
+                      assign should_show = true
+                    endif
+                  elsif block.settings.trigger_type == 'product_handle'
+                    assign trigger_value = block.settings.trigger_value | append: ','
+                    if cart_product_handles contains trigger_value
+                      assign should_show = true
+                    endif
+                  elsif block.settings.trigger_type == 'cart_total'
+                    assign cart_total_cents = cart.total_price
+                    assign trigger_total_cents = block.settings.trigger_total | times: 100
+                    if cart_total_cents >= trigger_total_cents
+                      assign should_show = true
+                    endif
+                  elsif block.settings.trigger_type == 'cart_count'
+                    if cart.item_count >= block.settings.trigger_count
+                      assign should_show = true
+                    endif
+                  endif
+
+                  # Determine if we should render this product
+                  if should_show and product_in_cart == false
+                    assign should_render = true
+                  endif
+                endif
+              endif
+            -%}
+            {%- if should_render -%}
+              {%- assign upsell_count = upsell_count | plus: 1 -%}
+              <div class="cart-upsell__product">
+                {% render 'cart-upsell-product', product: upsell_product, block: block %}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% style %}
+  .cart-upsell {
+    padding: var(--padding-xl) 0;
+    margin-top: var(--margin-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .cart-upsell__container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 var(--padding-md);
+  }
+
+  .cart-upsell__title {
+    margin-bottom: var(--margin-sm);
+    text-align: {{ section.settings.title_alignment }};
+  }
+
+  .cart-upsell__subtitle {
+    margin-bottom: var(--margin-lg);
+    text-align: {{ section.settings.title_alignment }};
+    opacity: 0.8;
+  }
+
+  .cart-upsell__products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 450px));
+    gap: var(--gap-md);
+    justify-content: center;
+  }
+
+  .cart-upsell__product {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .cart-upsell__products {
+      grid-template-columns: 1fr;
+      gap: var(--gap-md);
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Cart Upsell",
+  "class": "section-cart-upsell",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_upsell",
+      "label": "Enable upsell",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "You might also like"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h2",
+      "label": "Heading size"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Complete your purchase with these recommended products"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Title alignment"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width",
+      "label": "Section width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "upsell_product",
+      "name": "Upsell Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "select",
+          "id": "trigger_type",
+          "label": "Show when",
+          "options": [
+            {
+              "value": "always",
+              "label": "Always"
+            },
+            {
+              "value": "product_type",
+              "label": "Cart contains product type"
+            },
+            {
+              "value": "product_tag",
+              "label": "Cart contains product tag"
+            },
+            {
+              "value": "product_handle",
+              "label": "Cart contains product"
+            },
+            {
+              "value": "cart_total",
+              "label": "Cart total is at least"
+            },
+            {
+              "value": "cart_count",
+              "label": "Cart has at least X items"
+            }
+          ],
+          "default": "always"
+        },
+        {
+          "type": "text",
+          "id": "trigger_value",
+          "label": "Trigger value",
+          "info": "Enter product type, tag, or handle depending on trigger type",
+          "default": "Trigger Value"
+        },
+        {
+          "type": "number",
+          "id": "trigger_total",
+          "label": "Minimum cart total",
+          "info": "Only used when 'Cart total is at least' is selected",
+          "default": 0
+        },
+        {
+          "type": "number",
+          "id": "trigger_count",
+          "label": "Minimum item count",
+          "info": "Only used when 'Cart has at least X items' is selected",
+          "default": 1
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart Upsell",
+      "blocks": [
+        {
+          "type": "upsell_product"
+        },
+        {
+          "type": "upsell_product"
+        },
+        {
+          "type": "upsell_product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
