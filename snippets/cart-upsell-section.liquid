@@ -1,0 +1,34 @@
+{%- comment -%}
+  This snippet renders the cart upsell section.
+  It can be included in both the cart drawer and cart page.
+  
+  Usage:
+  {% render 'cart-upsell-section' %}
+{%- endcomment -%}
+
+{%- liquid
+  # Find the cart-upsell section
+  assign upsell_section = blank
+  for section in sections
+    if section.type == 'cart-upsell'
+      assign upsell_section = section
+      break
+    endif
+  endfor
+
+  # If section not found in sections array, try to get it by ID
+  if upsell_section == blank
+    assign section_id = 'cart-upsell'
+    for section in sections
+      if section.id == section_id
+        assign upsell_section = section
+        break
+      endif
+    endfor
+  endif
+-%}
+
+{%- if upsell_section != blank -%}
+  {%- render 'cart-upsell-section', section: upsell_section -%}
+{%- endif -%}
+
