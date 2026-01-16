@@ -13,17 +13,42 @@
   # %}
   
   # Configuration options with fallbacks
-  assign layout = layout | default: settings.layout | default: 'horizontal'
-  assign alignment = alignment | default: settings.alignment | default: 'center'
-  assign icon_size = icon_size | default: settings.icon_size | default: 'medium'
-  assign show_icons = show_icons | default: settings.show_icons
-  if show_icons == blank
-    assign show_icons = true
+  assign layout = layout | default: 'horizontal'
+  assign alignment = alignment | default: 'center'
+  assign icon_size = icon_size | default: 'medium'
+  assign show_icons = show_icons | default: true
+  assign spacing = spacing | default: 'medium'
+  assign max_badges = max_badges | default: 6
+  assign class_name = class_name | default: ''
+  assign style_override = style_override | default: ''
+  
+  # Override with settings if provided
+  if settings != blank
+    if settings.layout != blank
+      assign layout = settings.layout
+    endif
+    if settings.alignment != blank
+      assign alignment = settings.alignment
+    endif
+    if settings.icon_size != blank
+      assign icon_size = settings.icon_size
+    endif
+    if settings.show_icons != blank
+      assign show_icons = settings.show_icons
+    endif
+    if settings.spacing != blank
+      assign spacing = settings.spacing
+    endif
+    if settings.max_badges != blank
+      assign max_badges = settings.max_badges
+    endif
+    if settings.class_name != blank
+      assign class_name = settings.class_name
+    endif
+    if settings.style_override != blank
+      assign style_override = settings.style_override
+    endif
   endif
-  assign spacing = spacing | default: settings.spacing | default: 'medium'
-  assign max_badges = max_badges | default: settings.max_badges | default: 6
-  assign class_name = class_name | default: settings.class_name | default: ''
-  assign style_override = style_override | default: settings.style_override | default: ''
   
   # Collect badges from settings or direct parameters (supports up to max_badges)
   assign badge_count = 0
@@ -47,7 +72,7 @@
     assign badge_count = badge_count | plus: 1
   endif
   # If no direct parameters, check settings
-  if badge_count == 0
+  if badge_count == 0 and settings != blank
     for i in (1..max_badges)
       assign badge_text_key = 'badge_' | append: i | append: '_text'
       if settings[badge_text_key] != blank
@@ -84,7 +109,7 @@
           assign badge_text = badge_6_text
         endif
         
-        if badge_text == blank
+        if badge_text == blank and settings != blank
           assign badge_text = settings[badge_text_key]
         endif
         
@@ -101,7 +126,7 @@
           assign badge_icon = badge_6_icon
         endif
         
-        if badge_icon == blank
+        if badge_icon == blank and settings != blank
           assign badge_icon = settings[badge_icon_key]
         endif
         
@@ -118,7 +143,7 @@
           assign badge_link = badge_6_link
         endif
         
-        if badge_link == blank
+        if badge_link == blank and settings != blank
           assign badge_link = settings[badge_link_key]
         endif
       -%}
