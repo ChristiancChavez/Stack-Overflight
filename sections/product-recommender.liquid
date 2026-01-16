@@ -179,6 +179,14 @@
             <div class="product-recommender__product-image-column">
               <div class="product-recommender__product-image-wrapper">
                 <span class="product-recommender__price-badge"></span>
+                <button
+                  type="button"
+                  class="product-recommender__pdp-link-button"
+                  aria-label="View product details"
+                  data-product-handle=""
+                >
+                  <span class="product-recommender__pdp-link-icon">+</span>
+                </button>
                 <img
                   class="product-recommender__product-image"
                   src=""
@@ -225,6 +233,7 @@
   .product-recommender-section {
     position: relative;
     overflow: hidden;
+    padding: 15px 0;
   }
 
   .product-recommender-section--background-image {
@@ -246,13 +255,13 @@
 
   .product-recommender-section__header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 25px;
   }
 
   .product-recommender-section__title {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
-    margin: 0 0 16px 0;
+    margin: 0 0 5px 0;
     line-height: 1.2;
   }
 
@@ -462,7 +471,7 @@
   .product-recommender__product-card {
     background: var(--color-background);
     border-radius: 16px;
-    padding: 32px;
+    padding: 20px;
     box-shadow: 0 8px 32px rgba(var(--color-foreground-rgb), 0.1);
     display: flex;
     flex-direction: column;
@@ -514,6 +523,38 @@
     box-shadow: 0 4px 12px rgba(var(--color-foreground-rgb), 0.15);
     z-index: 2;
     white-space: nowrap;
+  }
+
+  .product-recommender__pdp-link-button {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    border: 2px solid var(--color-foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(var(--color-foreground-rgb), 0.15);
+  }
+
+  .product-recommender__pdp-link-button:hover {
+    background: lightgray;
+    color: var(--color-foreground);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(var(--color-foreground-rgb), 0.25);
+  }
+
+  .product-recommender__pdp-link-icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1;
   }
 
   .product-recommender__product-image {
@@ -718,7 +759,7 @@
 
   @media screen and (min-width: 750px) {
     .product-recommender-section__container--homepage .product-recommender-section__header {
-      margin-bottom: 35px;
+      margin-bottom: 25px;
     }
 
     .product-recommender-section__container--homepage .product-recommender__product-card {

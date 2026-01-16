@@ -25,6 +25,16 @@ class ProductRecommender extends HTMLElement {
     this.initializeCTA();
     this.updateProgress();
     this.optimizeForHomepage();
+    
+    // Store original subtitle text (it's outside the custom element)
+    const container = this.closest('.product-recommender-section__container') || this.parentElement;
+    const subtitleElement = container ? container.querySelector('.product-recommender-section__subtitle') : null;
+    if (subtitleElement) {
+      const htmlSubtitle = /** @type {HTMLElement} */ (subtitleElement);
+      if (!htmlSubtitle.dataset.originalText) {
+        htmlSubtitle.dataset.originalText = htmlSubtitle.textContent || 'Answer a few questions to get personalized recommendations';
+      }
+    }
   }
 
   /**
@@ -200,8 +210,12 @@ class ProductRecommender extends HTMLElement {
         // Scroll to top of selector for better UX
         nextStepElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
+      this.updateProgress();
     } else {
-      // All steps completed, trigger product recommendation
+      // All steps completed, mark as complete and update progress
+      this.currentStep = 4; // Mark as complete
+      this.updateProgress();
+      // Trigger product recommendation
       this.onAllStepsComplete();
     }
   }
@@ -220,7 +234,11 @@ class ProductRecommender extends HTMLElement {
       const stepNumber = index + 1;
       const stepElement = /** @type {HTMLElement} */ (step);
       
-      if (stepNumber < this.currentStep) {
+      if (this.currentStep >= 4) {
+        // All steps completed - mark all as completed
+        stepElement.setAttribute('data-completed', 'true');
+        stepElement.removeAttribute('data-active');
+      } else if (stepNumber < this.currentStep) {
         stepElement.setAttribute('data-completed', 'true');
         stepElement.removeAttribute('data-active');
       } else if (stepNumber === this.currentStep) {
@@ -232,8 +250,13 @@ class ProductRecommender extends HTMLElement {
       }
     });
 
-    // Update progress bar
-    const progressPercentage = ((this.currentStep - 1) / 3) * 100;
+    // Update progress bar - cap at 100% when all steps are complete
+    let progressPercentage = 0;
+    if (this.currentStep >= 4) {
+      progressPercentage = 100; // All steps completed
+    } else {
+      progressPercentage = ((this.currentStep - 1) / 3) * 100;
+    }
     progressFill.style.width = `${progressPercentage}%`;
   }
 
@@ -665,20 +688,15 @@ class ProductRecommender extends HTMLElement {
         'Medical Emergency Protection'
       ],
       'premium': [
-        '24/7 Travel Assistance',
         'Trip Cancellation & Interruption',
         'Medical Emergency & Evacuation',
         'Baggage Loss & Delay Coverage',
-        'Flight Delay Compensation'
+        
       ],
       'max': [
-        '24/7 Premium Travel Assistance',
-        'Full Trip Cancellation & Interruption',
         'Comprehensive Medical & Evacuation',
         'Baggage Loss, Delay & Theft Coverage',
         'Flight Delay & Missed Connection',
-        'Travel Document Replacement',
-        'Emergency Cash Transfer'
       ]
     });
     
@@ -711,6 +729,14 @@ class ProductRecommender extends HTMLElement {
       selector.classList.add('product-recommender__step--hidden');
     }
     resultContainer.classList.remove('product-recommender__result--hidden');
+
+    // Update subtitle to indicate product is ready (it's outside the custom element)
+    const container = this.closest('.product-recommender-section__container') || this.parentElement;
+    const subtitleElement = container ? container.querySelector('.product-recommender-section__subtitle') : null;
+    if (subtitleElement) {
+      const htmlSubtitle = /** @type {HTMLElement} */ (subtitleElement);
+      htmlSubtitle.textContent = 'Your personalized product recommendation is ready!';
+    }
 
     // Update product image - use image_id from mapping or variant's image_id
     const imageElement = /** @type {HTMLImageElement | null} */ (resultContainer.querySelector('.product-recommender__product-image'));
@@ -789,15 +815,49 @@ class ProductRecommender extends HTMLElement {
       
       // Extract text from body_html
       if (this.currentProduct && this.currentProduct.body_html) {
-        // Create a temporary div to extract text from HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = this.currentProduct.body_html;
-        
-        // Get text content (this automatically strips HTML tags)
-        copyText = tempDiv.textContent || tempDiv.innerText || '';
-        
-        // Clean up whitespace
-        copyText = copyText.replace(/\s+/g, ' ').trim();
+        try {
+          // Create a temporary div to extract text from HTML
+          const tempDiv = document.createElement('div');
+          
+          // Decode HTML entities first if needed
+          let htmlContent = this.currentProduct.body_html;
+          
+          // If the HTML is encoded, decode it
+          if (htmlContent.includes('&lt;') || htmlContent.includes('&gt;')) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = htmlContent;
+            htmlContent = textarea.value;
+          }
+          
+          // Set the HTML content
+          tempDiv.innerHTML = htmlContent;
+          
+          // Get text content (this automatically strips HTML tags)
+          copyText = tempDiv.textContent || tempDiv.innerText || '';
+          
+          // Additional cleanup: remove any remaining HTML-like patterns
+          copyText = copyText
+            .replace(/<[^>]*>/g, '') // Remove any HTML tags that might remain
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&[a-zA-Z]+;/g, '') // Remove any other HTML entities
+            .replace(/&[#\d]+;/g, '') // Remove numeric HTML entities
+            .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with single space
+            .trim();
+        } catch (error) {
+          console.error('Error extracting text from body_html:', error);
+          // Fallback: try to extract text directly
+          copyText = this.currentProduct.body_html
+            .replace(/<[^>]*>/g, '')
+            .replace(/&[a-zA-Z]+;/g, ' ')
+            .replace(/&[#\d]+;/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        }
       }
       
       // Fallback to description if available
@@ -807,8 +867,13 @@ class ProductRecommender extends HTMLElement {
       
       // IMPORTANT: Clear innerHTML first, then set textContent to ensure no HTML is rendered
       copyShopify.innerHTML = '';
-      const htmlElement = /** @type {HTMLElement} */ (copyShopify);
-      htmlElement.textContent = copyText || '';
+      copyShopify.textContent = copyText || '';
+      
+      // Double check: if innerHTML was set somehow, clear it again
+      if (copyShopify.innerHTML && copyShopify.innerHTML !== copyText) {
+        copyShopify.innerHTML = '';
+        copyShopify.textContent = copyText || '';
+      }
     }
 
     // Update product price badge above image
@@ -875,6 +940,15 @@ class ProductRecommender extends HTMLElement {
       ctaButton.dataset.productId = String(this.currentProduct.id);
       ctaButton.dataset.variantId = String(this.currentVariant.id);
       ctaButton.dataset.productHandle = this.currentProduct.handle;
+    }
+
+    // Initialize PDP link button
+    const pdpLinkButton = /** @type {HTMLElement | null} */ (resultContainer.querySelector('.product-recommender__pdp-link-button'));
+    if (pdpLinkButton && this.currentProduct && this.currentProduct.handle) {
+      pdpLinkButton.dataset.productHandle = this.currentProduct.handle;
+      pdpLinkButton.addEventListener('click', () => {
+        window.location.href = `/products/${this.currentProduct.handle}`;
+      });
     }
 
     // Scroll to result
@@ -1039,6 +1113,15 @@ class ProductRecommender extends HTMLElement {
     allCards.forEach(card => {
       card.removeAttribute('data-selected');
     });
+
+    // Reset subtitle to original text (it's outside the custom element)
+    const container = this.closest('.product-recommender-section__container') || this.parentElement;
+    const subtitleElement = container ? container.querySelector('.product-recommender-section__subtitle') : null;
+    if (subtitleElement) {
+      const htmlSubtitle = /** @type {HTMLElement} */ (subtitleElement);
+      const originalSubtitle = htmlSubtitle.dataset.originalText || 'Answer a few questions to get personalized recommendations';
+      htmlSubtitle.textContent = originalSubtitle;
+    }
 
     // Reset progress
     this.updateProgress();
