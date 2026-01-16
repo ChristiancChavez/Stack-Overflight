@@ -1,17 +1,46 @@
 {%- comment -%}
-  Trust Badges Block
-  Displays configurable trust badges to build customer confidence
-  Can be used in product-details, cart, or any section
+  Trust Badges Section
+  Displays trust badges on the home page or any page
 {%- endcomment -%}
 
-<div {{ block.shopify_attributes }}>
-  {% render 'trust-badges', settings: block.settings %}
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {% render 'trust-badges',
+    badge_1_text: section.settings.badge_1_text,
+    badge_1_icon: section.settings.badge_1_icon | image_url: width: 48,
+    badge_1_link: section.settings.badge_1_link,
+    badge_2_text: section.settings.badge_2_text,
+    badge_2_icon: section.settings.badge_2_icon | image_url: width: 48,
+    badge_2_link: section.settings.badge_2_link,
+    badge_3_text: section.settings.badge_3_text,
+    badge_3_icon: section.settings.badge_3_icon | image_url: width: 48,
+    badge_3_link: section.settings.badge_3_link,
+    badge_4_text: section.settings.badge_4_text,
+    badge_4_icon: section.settings.badge_4_icon | image_url: width: 48,
+    badge_4_link: section.settings.badge_4_link,
+    badge_5_text: section.settings.badge_5_text,
+    badge_5_icon: section.settings.badge_5_icon | image_url: width: 48,
+    badge_5_link: section.settings.badge_5_link,
+    badge_6_text: section.settings.badge_6_text,
+    badge_6_icon: section.settings.badge_6_icon | image_url: width: 48,
+    badge_6_link: section.settings.badge_6_link,
+    layout: section.settings.layout,
+    alignment: section.settings.alignment,
+    icon_size: section.settings.icon_size,
+    show_icons: section.settings.show_icons,
+    spacing: section.settings.spacing,
+    class_name: section.settings.class_name
+  %}
 </div>
 
 {% schema %}
 {
   "name": "Trust Badges",
-  "tag": null,
+  "tag": "section",
+  "class": "trust-badges-section",
   "settings": [
     {
       "type": "header",
@@ -98,6 +127,12 @@
         }
       ],
       "default": "medium"
+    },
+    {
+      "type": "text",
+      "id": "class_name",
+      "label": "Custom CSS class",
+      "info": "Optional custom CSS class to add to the trust badges container"
     },
     {
       "type": "header",
@@ -215,6 +250,71 @@
       "type": "url",
       "id": "badge_6_link",
       "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "settings": {
+        "badge_1_text": "Free Shipping",
+        "badge_2_text": "Secure Payment",
+        "badge_3_text": "30-Day Returns",
+        "layout": "horizontal",
+        "alignment": "center",
+        "icon_size": "medium",
+        "show_icons": true,
+        "spacing": "medium"
+      }
     }
   ]
 }

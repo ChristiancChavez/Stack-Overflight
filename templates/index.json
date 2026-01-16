@@ -26,9 +26,28 @@
         "padding-block-start": 64,
         "padding-block-end": 64
       }
+    },
+    "home_trust_badges": {
+      "type": "trust-badges",
+      "name": "Trust Badges",
+      "settings": {
+        "layout": "horizontal",
+        "alignment": "center",
+        "icon_size": "medium",
+        "show_icons": true,
+        "spacing": "medium",
+        "badge_1_text": "Free Shipping",
+        "badge_2_text": "Secure Payment",
+        "badge_3_text": "30-Day Returns",
+        "section_width": "page-width",
+        "color_scheme": "",
+        "padding-block-start": 32,
+        "padding-block-end": 32
+      }
     }
   },
   "order": [
-    "product_recommender_homepage"
+    "product_recommender_homepage",
+    "home_trust_badges"
   ]
 }
