@@ -38,36 +38,47 @@
     assign badge_text = ''
     assign badge_icon = ''
     assign badge_link = ''
+    assign badge_color = ''
     
     if i == 1
       assign badge_text = badge_1_text
       assign badge_icon = badge_1_icon
       assign badge_link = badge_1_link
+      assign badge_color = badge_1_color
     elsif i == 2
       assign badge_text = badge_2_text
       assign badge_icon = badge_2_icon
       assign badge_link = badge_2_link
+      assign badge_color = badge_2_color
     elsif i == 3
       assign badge_text = badge_3_text
       assign badge_icon = badge_3_icon
       assign badge_link = badge_3_link
+      assign badge_color = badge_3_color
     elsif i == 4
       assign badge_text = badge_4_text
       assign badge_icon = badge_4_icon
       assign badge_link = badge_4_link
+      assign badge_color = badge_4_color
     elsif i == 5
       assign badge_text = badge_5_text
       assign badge_icon = badge_5_icon
       assign badge_link = badge_5_link
+      assign badge_color = badge_5_color
     elsif i == 6
       assign badge_text = badge_6_text
       assign badge_icon = badge_6_icon
       assign badge_link = badge_6_link
+      assign badge_color = badge_6_color
     endif
     
     if badge_text != blank
       assign badge_count = badge_count | plus: 1
-      assign badge_html = '<div class="trust-badge trust-badge--icon-' | append: icon_size | append: ' trust-badge--card">'
+      assign badge_style = ''
+      if badge_color != blank
+        assign badge_style = ' style="background-color: ' | append: badge_color | append: ';"'
+      endif
+      assign badge_html = '<div class="trust-badge trust-badge--icon-' | append: icon_size | append: ' trust-badge--card"' | append: badge_style | append: '>'
       
       if show_icons and badge_icon != blank
         assign badge_html = badge_html | append: '<div class="trust-badge__icon"><img src="' | append: badge_icon | append: '" alt="' | append: badge_text | append: '" loading="lazy"></div>'
@@ -179,6 +190,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      border-radius: 8px;
     }
 
     .trust-badge--icon-small .trust-badge__icon {
