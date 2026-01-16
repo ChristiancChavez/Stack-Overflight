@@ -8,24 +8,50 @@
   class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
   style="{% render 'spacing-style', settings: section.settings %}"
 >
+  {%- liquid
+    assign badge_1_icon_url = ''
+    if section.settings.badge_1_icon != blank
+      assign badge_1_icon_url = section.settings.badge_1_icon | image_url: width: 48
+    endif
+    assign badge_2_icon_url = ''
+    if section.settings.badge_2_icon != blank
+      assign badge_2_icon_url = section.settings.badge_2_icon | image_url: width: 48
+    endif
+    assign badge_3_icon_url = ''
+    if section.settings.badge_3_icon != blank
+      assign badge_3_icon_url = section.settings.badge_3_icon | image_url: width: 48
+    endif
+    assign badge_4_icon_url = ''
+    if section.settings.badge_4_icon != blank
+      assign badge_4_icon_url = section.settings.badge_4_icon | image_url: width: 48
+    endif
+    assign badge_5_icon_url = ''
+    if section.settings.badge_5_icon != blank
+      assign badge_5_icon_url = section.settings.badge_5_icon | image_url: width: 48
+    endif
+    assign badge_6_icon_url = ''
+    if section.settings.badge_6_icon != blank
+      assign badge_6_icon_url = section.settings.badge_6_icon | image_url: width: 48
+    endif
+  -%}
   {% render 'trust-badges',
     badge_1_text: section.settings.badge_1_text,
-    badge_1_icon: section.settings.badge_1_icon | image_url: width: 48,
+    badge_1_icon: badge_1_icon_url,
     badge_1_link: section.settings.badge_1_link,
     badge_2_text: section.settings.badge_2_text,
-    badge_2_icon: section.settings.badge_2_icon | image_url: width: 48,
+    badge_2_icon: badge_2_icon_url,
     badge_2_link: section.settings.badge_2_link,
     badge_3_text: section.settings.badge_3_text,
-    badge_3_icon: section.settings.badge_3_icon | image_url: width: 48,
+    badge_3_icon: badge_3_icon_url,
     badge_3_link: section.settings.badge_3_link,
     badge_4_text: section.settings.badge_4_text,
-    badge_4_icon: section.settings.badge_4_icon | image_url: width: 48,
+    badge_4_icon: badge_4_icon_url,
     badge_4_link: section.settings.badge_4_link,
     badge_5_text: section.settings.badge_5_text,
-    badge_5_icon: section.settings.badge_5_icon | image_url: width: 48,
+    badge_5_icon: badge_5_icon_url,
     badge_5_link: section.settings.badge_5_link,
     badge_6_text: section.settings.badge_6_text,
-    badge_6_icon: section.settings.badge_6_icon | image_url: width: 48,
+    badge_6_icon: badge_6_icon_url,
     badge_6_link: section.settings.badge_6_link,
     layout: section.settings.layout,
     alignment: section.settings.alignment,

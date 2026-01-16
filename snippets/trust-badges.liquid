@@ -169,25 +169,31 @@
 
     .trust-badge__icon {
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .trust-badge__icon img {
       display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
-    .trust-badge--icon-small .trust-badge__icon img {
-      width: 16px;
-      height: 16px;
-    }
-
-    .trust-badge--icon-medium .trust-badge__icon img {
-      width: 24px;
-      height: 24px;
-    }
-
-    .trust-badge--icon-large .trust-badge__icon img {
+    .trust-badge--icon-small .trust-badge__icon {
       width: 32px;
       height: 32px;
+    }
+
+    .trust-badge--icon-medium .trust-badge__icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .trust-badge--icon-large .trust-badge__icon {
+      width: 64px;
+      height: 64px;
     }
 
     .trust-badge__text {
