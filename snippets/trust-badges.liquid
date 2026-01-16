@@ -67,7 +67,7 @@
     
     if badge_text != blank
       assign badge_count = badge_count | plus: 1
-      assign badge_html = '<div class="trust-badge trust-badge--icon-' | append: icon_size | append: '">'
+      assign badge_html = '<div class="trust-badge trust-badge--icon-' | append: icon_size | append: ' trust-badge--card">'
       
       if show_icons and badge_icon != blank
         assign badge_html = badge_html | append: '<div class="trust-badge__icon"><img src="' | append: badge_icon | append: '" alt="' | append: badge_text | append: '" loading="lazy"></div>'
@@ -149,6 +149,24 @@
       gap: var(--gap-xs);
     }
 
+    .trust-badge--card {
+      background: var(--color-background, #fff);
+      border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+      border-radius: 8px;
+      padding: var(--padding-md);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--gap-sm);
+    }
+
+    .trust-badge--card:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
     .trust-badge__icon {
       flex-shrink: 0;
     }
@@ -183,6 +201,12 @@
       display: flex;
       align-items: center;
       gap: var(--gap-xs);
+    }
+
+    .trust-badge--card .trust-badge__link {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--gap-sm);
     }
 
     .trust-badge__link:hover {
