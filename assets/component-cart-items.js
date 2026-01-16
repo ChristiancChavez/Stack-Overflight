@@ -175,7 +175,7 @@ class CartItemsComponent extends Component {
         this.#updateCartQuantitySelectorButtonStates();
       })
       .catch((error) => {
-        console.error(error);
+        // Error handled silently
       })
       .finally(() => {
         this.#enableCartItems();

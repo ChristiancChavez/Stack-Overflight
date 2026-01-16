@@ -103,7 +103,6 @@ class ProductRecommender extends HTMLElement {
         this.mappings = JSON.parse(mappingsData);
       }
     } catch (e) {
-      console.error('Error parsing mappings:', e);
       this.mappings = [];
     }
   }
@@ -118,7 +117,6 @@ class ProductRecommender extends HTMLElement {
         this.benefits = JSON.parse(benefitsData);
       }
     } catch (e) {
-      console.error('Error parsing benefits:', e);
       this.benefits = [];
     }
   }
@@ -130,7 +128,6 @@ class ProductRecommender extends HTMLElement {
     const optionCards = this.querySelectorAll('.product-recommender__option-card');
     
     if (optionCards.length === 0) {
-      console.warn('No option cards found in product recommender');
       return;
     }
     
@@ -144,7 +141,6 @@ class ProductRecommender extends HTMLElement {
         const value = htmlCard.dataset.value || '';
         
         if (!step || !value) {
-          console.warn('Missing step or value:', { step, value, dataset: htmlCard.dataset });
           return;
         }
         
@@ -281,8 +277,6 @@ class ProductRecommender extends HTMLElement {
       if (defaultMapping && defaultMapping.settings && defaultMapping.settings.product) {
         await this.loadProductData(defaultMapping);
         this.displayProduct(defaultMapping);
-      } else {
-        console.warn('No matching product found for selections:', this.selections);
       }
     }
   }
@@ -675,7 +669,6 @@ class ProductRecommender extends HTMLElement {
         this.currentVariant = this.currentProduct.variants.find(/** @param {any} v */ (v) => v.available) || this.currentProduct.variants[0];
       }
     } catch (error) {
-      console.error('Error loading product data:', error);
       this.currentProduct = null;
       this.currentVariant = null;
     }
@@ -722,7 +715,6 @@ class ProductRecommender extends HTMLElement {
    */
   displayProduct(mapping) {
     if (!this.currentProduct || !this.currentVariant || !mapping || !mapping.settings) {
-      console.error('Product data not loaded');
       return;
     }
 
@@ -795,13 +787,6 @@ class ProductRecommender extends HTMLElement {
         imageElement.src = imageUrl;
         imageElement.alt = this.currentProduct.title || '';
       } else {
-        console.warn('No valid image URL found for product:', {
-          productId: this.currentProduct.id,
-          variantId: this.currentVariant?.id,
-          mappingImageId: mapping.settings.image_id,
-          hasImages: !!this.currentProduct.images,
-          imagesCount: this.currentProduct.images?.length || 0
-        });
         // Hide image if no URL found
         imageElement.style.display = 'none';
       }
@@ -855,7 +840,6 @@ class ProductRecommender extends HTMLElement {
             .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with single space
             .trim();
         } catch (error) {
-          console.error('Error extracting text from body_html:', error);
           // Fallback: try to extract text directly
           copyText = this.currentProduct.body_html
             .replace(/<[^>]*>/g, '')

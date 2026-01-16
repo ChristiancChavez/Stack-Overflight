@@ -144,7 +144,6 @@ class ProductRecommendations extends HTMLElement {
    * @param {Error} error
    */
   #handleError(error) {
-    console.error('Product recommendations error:', error.message);
     this.classList.add('hidden');
     this.dataset.error = 'Error loading product recommendations';
   }

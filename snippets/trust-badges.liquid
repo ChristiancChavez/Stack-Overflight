@@ -22,15 +22,12 @@
 {%- endcomment -%}
 
 {%- liquid
-  # Default values
   assign layout = layout | default: 'horizontal'
   assign alignment = alignment | default: 'center'
   assign icon_size = icon_size | default: 'medium'
   assign show_icons = show_icons | default: true
   assign spacing = spacing | default: 'medium'
   assign class_name = class_name | default: ''
-  
-  # Collect badges (up to 6)
   assign badge_count = 0
   assign badges = ''
   
