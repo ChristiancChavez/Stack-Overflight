@@ -4,13 +4,7 @@
   # Usage examples:
   # {% render 'trust-badges', settings: section.settings %}
   # {% render 'trust-badges', settings: block.settings %}
-  # {% render 'trust-badges', 
-  #    badge_1_text: 'Free Shipping',
-  #    badge_1_icon: 'icon-shipping',
-  #    badge_1_link: '/pages/shipping',
-  #    layout: 'horizontal',
-  #    alignment: 'center'
-  # %}
+  # {% render 'trust-badges', badge_1_text: 'Free Shipping', badge_1_icon: 'icon-shipping', badge_1_link: '/pages/shipping', layout: 'horizontal', alignment: 'center' %}
   
   # Configuration options with fallbacks
   assign layout = layout | default: settings.layout | default: 'horizontal'
@@ -300,3 +294,16 @@
   }
 {% endstylesheet %}
 
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'trust-badges', \n  #    badge_1_text: 'Free Shipping',\n  #    badge_1_icon:
+    'icon-shipping',\n  #    badge_1_link: '/pages/shipping',\n  #    layout: 'horizontal',\n
+    \ #    alignment: 'center'\n  # %}"
+  to: "{% render 'trust-badges', badge_1_text: 'Free Shipping', badge_1_icon: 'icon-shipping',
+    badge_1_link: '/pages/shipping', layout: 'horizontal', alignment: 'center' %}"
+  position: 211..376
+{% endcomment %}
